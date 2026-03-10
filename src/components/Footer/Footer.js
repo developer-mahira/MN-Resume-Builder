@@ -43,13 +43,13 @@ const Footer = () => {
               powerful cover letters, and optimize them for ATS systems.
             </p>
             <div className="flex space-x-4">
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#bbad79] hover:text-white transition-all">
+              <a href="https://linkedin.com/in/mahira-noor-developer08" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#bbad79] hover:text-white transition-all">
                 <FaLinkedin className="text-lg" />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#bbad79] hover:text-white transition-all">
+              <a href="https://twitter.com/Mahiranoor088" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#bbad79] hover:text-white transition-all">
                 <FaTwitter className="text-lg" />
               </a>
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#bbad79] hover:text-white transition-all">
+              <a href="https://github.com/developer-mahira" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#bbad79] hover:text-white transition-all">
                 <FaGithub className="text-lg" />
               </a>
             </div>
@@ -124,7 +124,7 @@ const Footer = () => {
               </span>
               <span className="flex items-center gap-2">
                 <FaMapMarker className="text-[#bbad79]" />
-                San Francisco, CA
+                Karachi, Pakistan
               </span>
             </div>
           </div>
@@ -136,7 +136,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm gap-4">
             <div className="flex items-center gap-2">
-              <p>Created by Mahira — © {currentYear} All Rights Reserved</p>
+              <p>Created by Mahira Noor — © {currentYear} All Rights Reserved</p>
             </div>
             <p className="flex items-center gap-1">
               Made with <FaHeart className="text-red-500 text-xs mx-1" /> for professionals
