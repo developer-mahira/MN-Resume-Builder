@@ -23,7 +23,7 @@ const SidebarResumePreview = () => {
           </h2>
           <div className="mb-[1px] text-[4px]">
             <div className="text-gray-500 text-[3px]">Email</div>
-            <div className="text-white text-[4px] break-all">john@email.com</div>
+            <div className="text-white text-[4px] break-all">mahiranoor.088@email.com</div>
           </div>
           <div className="mb-[1px] text-[4px]">
             <div className="text-gray-500 text-[3px]">Phone</div>

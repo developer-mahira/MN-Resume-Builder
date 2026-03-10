@@ -10,7 +10,7 @@ const CorporateClassicPreview = () => {
         </h1>
         <div className="text-gray-600 text-[5px]">
           <div className="flex flex-wrap gap-1">
-            <span>john@email.com</span>
+            <span>mahiranoor.088@gmail.com</span>
             <span>|</span>
             <span>+1 555-123-4567</span>
             <span>|</span>

@@ -24,7 +24,7 @@ const DeveloperTechPreview = () => {
         <div className="mt-1 flex flex-wrap gap-1 text-[4px]">
           <span className="text-gray-400">{'{'}</span>
           <span className="text-green-600">email:</span>
-          <span className="text-gray-700">"john@email.com"</span>
+          <span className="text-gray-700">"mahiranoor.088@email.com"</span>
           <span className="text-gray-400">,</span>
           <span className="text-green-600">phone:</span>
           <span className="text-gray-700">"+1 555-..."</span>

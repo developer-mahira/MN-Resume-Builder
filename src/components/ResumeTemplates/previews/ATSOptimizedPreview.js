@@ -9,7 +9,7 @@ const ATSOptimizedPreview = () => {
           Mahira Noor
         </h1>
         <div className="text-gray-600 text-[5px]">
-          john@email.com | +1 555-123-4567 | San Francisco, USA
+          mahiranoor.088@gmail.com | +1 555-123-4567 | San Francisco, USA
         </div>
       </header>
 

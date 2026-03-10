@@ -12,7 +12,7 @@ const CreativeDesignerPreview = () => {
           </h1>
           <div className="flex flex-wrap gap-2 text-gray-500 text-[5px] mt-1" style={{ fontFamily: 'Arial, sans-serif' }}>
             <span className="flex items-center gap-[1px]">
-              <span className="text-red-500">✉</span> john@email.com
+              <span className="text-red-500">✉</span> mahiranoor.088@email.com
             </span>
             <span className="flex items-center gap-[1px]">
               <span className="text-red-500">☎</span> +1 555-123-4567
