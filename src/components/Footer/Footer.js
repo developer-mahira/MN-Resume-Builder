@@ -43,13 +43,13 @@ const Footer = () => {
               powerful cover letters, and optimize them for ATS systems.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#bbad79] hover:text-white transition-all">
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#bbad79] hover:text-white transition-all">
                 <FaLinkedin className="text-lg" />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#bbad79] hover:text-white transition-all">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#bbad79] hover:text-white transition-all">
                 <FaTwitter className="text-lg" />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#bbad79] hover:text-white transition-all">
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-[#bbad79] hover:text-white transition-all">
                 <FaGithub className="text-lg" />
               </a>
             </div>

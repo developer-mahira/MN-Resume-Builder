@@ -1,51 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaArrowLeft, FaStar, FaDownload, FaEye } from 'react-icons/fa';
+import { FaArrowLeft, FaStar, FaEye } from 'react-icons/fa';
 import TemplateRenderer from '../../components/ResumeTemplates/TemplateRenderer';
 import { getAllTemplates } from '../../components/ResumeTemplates/TemplateRenderer';
 
-// Sample data for previews
-const sampleData = {
-  personal: {
-    firstName: 'Mahira',
-    lastName: 'Noor',
-    email: 'mahira.noor@email.com',
-    phone: '+1 555-123-4567',
-    city: 'San Francisco',
-    country: 'USA',
-    linkedin: 'linkedin.com/in/mahiranoor',
-    portfolio: 'mahiranoor.dev',
-    summary: 'Experienced professional with expertise in delivering results.',
-  },
-  skills: ['JavaScript', 'React', 'Node.js'],
-  workExperience: [
-    { jobTitle: 'Senior Developer', company: 'Tech Corp', startDate: '2020-01', endDate: '', description: 'Led development of key features.' },
-  ],
-  education: [
-    { degree: 'BS Computer Science', institution: 'Stanford University', startYear: '2016', endYear: '2020', gpa: '3.8' },
-  ],
-  projects: [
-    { name: 'E-Commerce Platform', technologies: 'React, Node.js', description: 'Built full-featured online store.' },
-  ],
-  certifications: [
-    { name: 'AWS Solutions Architect', issuer: 'Amazon Web Services', date: '2022-06' },
-  ],
-  languages: [
-    { name: 'English', proficiency: 'Native' },
-  ],
-};
-
 const Templates = () => {
   const templates = getAllTemplates();
-
-  const templateIdMap = {
-    1: 'minimal',
-    2: 'corporate',
-    3: 'creative',
-    4: 'ats',
-    5: 'sidebar',
-    6: 'developer',
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">

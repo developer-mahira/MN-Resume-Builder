@@ -79,7 +79,6 @@ const ResumeBuilder = () => {
 
   const templates = getAllTemplates();
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const isTablet = typeof window !== 'undefined' && window.innerWidth >= 768 && window.innerWidth < 1024;
   const showSplitView = showPreview && !isMobile;
 
   const renderForm = () => {

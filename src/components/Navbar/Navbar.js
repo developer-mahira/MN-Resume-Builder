@@ -35,7 +35,6 @@ const Navbar = () => {
   ];
 
   const textColor = 'text-white';
-  const hoverColor = 'text-[#bbad79]';
   const bgColor = 'bg-[#1a2332]';
 
   return (

@@ -9,16 +9,6 @@ const DeveloperTech = ({ data }) => {
     return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   };
 
-  // Split skills into categories if needed
-  const skillCategories = skills && skills.length > 0 
-    ? skills.reduce((acc, skill, index) => {
-        const categoryIndex = Math.floor(index / 6);
-        if (!acc[categoryIndex]) acc[categoryIndex] = [];
-        acc[categoryIndex].push(skill);
-        return acc;
-      }, [])
-    : [];
-
   return (
     <div className="bg-white p-8 min-h-[1123px] text-sm font-mono">
       {/* Header - Tech Style */}
@@ -212,7 +202,7 @@ const DeveloperTech = ({ data }) => {
 
       {/* Footer */}
       <footer className="mt-8 pt-4 border-t border-gray-200 text-center text-gray-500 text-xs">
-        <span className="text-[#bbad79]">//</span> Built with MN Resume Builder <span className="text-[#bbad79]">//</span>
+        <span className="text-[#bbad79]">{'//'}</span> Built with MN Resume Builder <span className="text-[#bbad79]">{'//'}</span>
       </footer>
     </div>
   );

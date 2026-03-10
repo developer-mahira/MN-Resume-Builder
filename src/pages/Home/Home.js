@@ -2,8 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   FaFileAlt, FaEnvelope, FaSearch, FaThLarge, FaDownload, 
-  FaShieldAlt, FaArrowRight, FaCheckCircle, FaStar,
-  FaBriefcase, FaGraduationCap, FaCode, FaPencilAlt
+  FaShieldAlt, FaArrowRight, FaCheckCircle, FaStar, FaPencilAlt
 } from 'react-icons/fa';
 import TemplateRenderer from '../../components/ResumeTemplates/TemplateRenderer';
 import { getAllTemplates } from '../../components/ResumeTemplates/TemplateRenderer';
@@ -49,37 +48,6 @@ const Home = () => {
   ];
 
   const templates = getAllTemplates();
-  
-  // Sample data for preview
-  const sampleData = {
-    personal: {
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@email.com',
-      phone: '+1 555-123-4567',
-      city: 'San Francisco',
-      country: 'USA',
-      linkedin: 'linkedin.com/in/johndoe',
-      portfolio: 'johndoe.dev',
-      summary: 'Experienced professional with expertise in delivering results.',
-    },
-    skills: ['JavaScript', 'React', 'Node.js', 'Python'],
-    workExperience: [
-      { jobTitle: 'Senior Developer', company: 'Tech Corp', startDate: '2020-01', endDate: '', description: 'Led development of key features.' },
-    ],
-    education: [
-      { degree: 'BS Computer Science', institution: 'Stanford University', startYear: '2016', endYear: '2020', gpa: '3.8' },
-    ],
-    projects: [
-      { name: 'E-Commerce Platform', technologies: 'React, Node.js', description: 'Built full-featured online store.' },
-    ],
-    certifications: [
-      { name: 'AWS Solutions Architect', issuer: 'Amazon Web Services', date: '2022-06' },
-    ],
-    languages: [
-      { name: 'English', proficiency: 'Native' },
-    ],
-  };
 
   const navigate = useNavigate();
 

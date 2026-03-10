@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   FaFileAlt, FaEnvelope, FaSearch, FaPlus, FaEdit, FaTrash, 
-  FaDownload, FaEye, FaUser, FaSignOutAlt, FaBars, FaTimes, FaCheckCircle, FaClock
+  FaDownload, FaUser, FaSignOutAlt, FaBars, FaCheckCircle, FaClock
 } from 'react-icons/fa';
 
 const Dashboard = () => {
@@ -29,23 +29,6 @@ const Dashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('rba_current_user');
     navigate('/');
-  };
-
-  const createNewResume = () => {
-    const newResume = {
-      id: Date.now(),
-      name: 'New Resume',
-      template: 'minimal',
-      lastModified: new Date().toISOString().split('T')[0],
-      status: 'draft',
-      data: null
-    };
-    
-    const resumes = [...savedResumes, newResume];
-    localStorage.setItem('rba_resumes', JSON.stringify(resumes));
-    setSavedResumes(resumes);
-    
-    navigate(`/resume-builder?resumeId=${newResume.id}`);
   };
 
   const deleteResume = (id) => {
