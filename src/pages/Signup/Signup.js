@@ -61,17 +61,14 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      // Get existing users from localStorage
       const users = JSON.parse(localStorage.getItem('rba_users') || '[]');
       
-      // Check if email already exists
       if (users.find(u => u.email === formData.email)) {
         setError('An account with this email already exists');
         setLoading(false);
         return;
       }
       
-      // Create new user
       const newUser = { 
         email: formData.email, 
         name: formData.name, 
@@ -79,14 +76,11 @@ const Signup = () => {
         createdAt: new Date().toISOString()
       };
       
-      // Add to users array
       users.push(newUser);
       localStorage.setItem('rba_users', JSON.stringify(users));
       
-      // Save session
       localStorage.setItem('rba_current_user', JSON.stringify(newUser));
       
-      // Check for redirect after login
       const redirectUrl = localStorage.getItem('rba_redirect_after_login');
       localStorage.removeItem('rba_redirect_after_login');
       
@@ -104,32 +98,82 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-[#bbad79]/30 flex items-center justify-center px-4 py-12">
-      {/* Decorative elements */}
-      <div className="absolute top-20 right-10 w-72 h-72 bg-[#bbad79]/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-[#bbad79]/10 rounded-full blur-3xl"></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#bbad79]/5 rounded-full blur-3xl"></div>
+    <div 
+      className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-[#bbad79]/30 flex items-center justify-center"
+      style={{ 
+        position: 'relative', 
+        overflow: 'hidden', 
+        width: '100%', 
+        maxWidth: '100vw',
+        minHeight: '100vh'
+      }}
+    >
+      {/* Decorative elements - hidden on mobile, visible on sm+ */}
+      <div 
+        className="hidden sm:block absolute" 
+        style={{ 
+          top: '5rem', 
+          right: '2.5rem', 
+          width: '18rem', 
+          height: '18rem', 
+          backgroundColor: 'rgba(187, 173, 121, 0.1)', 
+          borderRadius: '50%', 
+          filter: 'blur(3rem)',
+          maxWidth: '40vw',
+          maxHeight: '40vw'
+        }}
+      ></div>
+      <div 
+        className="hidden sm:block absolute" 
+        style={{ 
+          bottom: '5rem', 
+          left: '2.5rem', 
+          width: '24rem', 
+          height: '24rem', 
+          backgroundColor: 'rgba(187, 173, 121, 0.1)', 
+          borderRadius: '50%', 
+          filter: 'blur(3rem)',
+          maxWidth: '40vw',
+          maxHeight: '40vw'
+        }}
+      ></div>
 
-      <div className="relative z-10 w-full max-w-md">
+      {/* Main Container */}
+      <div 
+        className="relative z-10"
+        style={{ 
+          width: '100%', 
+          maxWidth: '420px',
+          padding: '16px',
+          boxSizing: 'border-box'
+        }}
+      >
         {/* Logo */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center space-x-3 group">
-            <div className="w-14 h-14 bg-[#bbad79] rounded-2xl flex items-center justify-center group-hover:bg-[#9a9163] transition-all shadow-lg shadow-[#bbad79]/30">
-              <FaFileAlt className="text-white text-2xl" />
+        <div className="text-center mb-6">
+          <Link to="/" className="inline-flex items-center space-x-2 group">
+            <div className="w-12 h-12 bg-[#bbad79] rounded-xl flex items-center justify-center group-hover:bg-[#9a9163] transition-all shadow-lg" style={{ backgroundColor: '#bbad79' }}>
+              <FaFileAlt className="text-white text-xl" />
             </div>
-            <span className="font-bold text-2xl text-white">MN Resume Builder</span>
+            <span className="font-bold text-xl text-white">MN Resume Builder</span>
           </Link>
         </div>
 
         {/* Signup Card */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/20">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
-            <p className="text-gray-600">Start building your professional resume today</p>
+        <div 
+          className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl"
+          style={{ 
+            padding: '24px 20px',
+            boxSizing: 'border-box',
+            width: '100%'
+          }}
+        >
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Create Account</h2>
+            <p className="text-gray-600 text-sm">Start building your professional resume today</p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl mb-6 flex items-center">
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl mb-4 flex items-center">
               <span className="text-lg mr-2">⚠️</span>
               {error}
             </div>
@@ -148,8 +192,9 @@ const Signup = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#bbad79] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#bbad79] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                   placeholder="John Doe"
+                  style={{ fontSize: '16px', minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
                 />
               </div>
             </div>
@@ -166,8 +211,9 @@ const Signup = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#bbad79] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#bbad79] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                   placeholder="you@example.com"
+                  style={{ fontSize: '16px', minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
                 />
               </div>
             </div>
@@ -184,8 +230,9 @@ const Signup = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full pl-12 pr-14 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#bbad79] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full pl-12 pr-14 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#bbad79] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                   placeholder="••••••••"
+                  style={{ fontSize: '16px', minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
                 />
                 <button
                   type="button"
@@ -202,7 +249,7 @@ const Signup = () => {
               
               {/* Password Requirements */}
               {formData.password && (
-                <div className="mt-3 grid grid-cols-2 gap-2">
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-1">
                   {passwordRequirements.map((req, index) => (
                     <div key={index} className="flex items-center text-xs">
                       {req.met ? (
@@ -231,8 +278,9 @@ const Signup = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#bbad79] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#bbad79] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                   placeholder="••••••••"
+                  style={{ fontSize: '16px', minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
                 />
               </div>
               {formData.confirmPassword && formData.password === formData.confirmPassword && (
@@ -268,6 +316,7 @@ const Signup = () => {
               type="submit"
               disabled={loading}
               className="w-full py-4 bg-gradient-to-r from-[#bbad79] to-[#9a9163] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#bbad79]/30 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              style={{ minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -282,7 +331,7 @@ const Signup = () => {
           </form>
 
           {/* Divider */}
-          <div className="relative my-8">
+          <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
             </div>
@@ -292,19 +341,25 @@ const Signup = () => {
           </div>
 
           {/* Social Login Buttons */}
-          <div className="grid grid-cols-2 gap-4">
-            <button className="flex items-center justify-center py-3.5 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group">
+          <div className="flex flex-col gap-3">
+            <button 
+              className="flex items-center justify-center py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group w-full"
+              style={{ minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
+            >
               <FaGoogle className="text-gray-600 group-hover:text-[#bbad79] transition-colors mr-2" />
               <span className="text-gray-700 font-medium">Google</span>
             </button>
-            <button className="flex items-center justify-center py-3.5 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group">
+            <button 
+              className="flex items-center justify-center py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group w-full"
+              style={{ minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
+            >
               <FaGithub className="text-gray-600 group-hover:text-[#bbad79] transition-colors mr-2" />
               <span className="text-gray-700 font-medium">GitHub</span>
             </button>
           </div>
 
           {/* Sign In Link */}
-          <p className="mt-8 text-center text-gray-600">
+          <p className="mt-6 text-center text-gray-600 text-sm">
             Already have an account?{' '}
             <Link to="/login" className="text-[#bbad79] hover:text-[#9a9163] font-semibold">
               Sign in
@@ -313,8 +368,8 @@ const Signup = () => {
         </div>
 
         {/* Back to Home */}
-        <div className="text-center mt-8">
-          <Link to="/" className="text-gray-400 hover:text-white transition-colors inline-flex items-center">
+        <div className="text-center mt-6 pb-4">
+          <Link to="/" className="text-gray-400 hover:text-white transition-colors inline-flex items-center text-sm">
             <span className="mr-2">←</span> Back to Home
           </Link>
         </div>

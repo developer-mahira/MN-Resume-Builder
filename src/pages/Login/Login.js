@@ -21,18 +21,15 @@ const Login = () => {
       return;
     }
 
-    // Accept any email + password combination for frictionless demo/testing
     try {
       const user = {
         email: email,
-        name: email.split('@')[0], // Use part before @ as default name
+        name: email.split('@')[0],
         password: password
       };
       
-      // Save session
       localStorage.setItem('rba_current_user', JSON.stringify(user));
       
-      // Check for redirect after login
       const redirectUrl = localStorage.getItem('rba_redirect_after_login');
       localStorage.removeItem('rba_redirect_after_login');
       
@@ -50,38 +47,88 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-[#bbad79]/30 flex items-center justify-center px-4 py-12">
-      {/* Decorative elements */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-[#bbad79]/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#bbad79]/10 rounded-full blur-3xl"></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#bbad79]/5 rounded-full blur-3xl"></div>
+    <div 
+      className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-[#bbad79]/30 flex items-center justify-center"
+      style={{ 
+        position: 'relative', 
+        overflow: 'hidden', 
+        width: '100%', 
+        maxWidth: '100vw',
+        minHeight: '100vh'
+      }}
+    >
+      {/* Decorative elements - hidden on mobile, visible on sm+ */}
+      <div 
+        className="hidden sm:block absolute" 
+        style={{ 
+          top: '5rem', 
+          left: '2.5rem', 
+          width: '18rem', 
+          height: '18rem', 
+          backgroundColor: 'rgba(187, 173, 121, 0.1)', 
+          borderRadius: '50%', 
+          filter: 'blur(3rem)',
+          maxWidth: '40vw',
+          maxHeight: '40vw'
+        }}
+      ></div>
+      <div 
+        className="hidden sm:block absolute" 
+        style={{ 
+          bottom: '5rem', 
+          right: '2.5rem', 
+          width: '24rem', 
+          height: '24rem', 
+          backgroundColor: 'rgba(187, 173, 121, 0.1)', 
+          borderRadius: '50%', 
+          filter: 'blur(3rem)',
+          maxWidth: '40vw',
+          maxHeight: '40vw'
+        }}
+      ></div>
 
-      <div className="relative z-10 w-full max-w-md">
+      {/* Main Container */}
+      <div 
+        className="relative z-10"
+        style={{ 
+          width: '100%', 
+          maxWidth: '420px',
+          padding: '16px',
+          boxSizing: 'border-box'
+        }}
+      >
         {/* Logo */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center space-x-3 group">
-            <div className="w-14 h-14 bg-[#bbad79] rounded-2xl flex items-center justify-center group-hover:bg-[#9a9163] transition-all shadow-lg shadow-[#bbad79]/30">
-              <FaFileAlt className="text-white text-2xl" />
+        <div className="text-center mb-6">
+          <Link to="/" className="inline-flex items-center space-x-2 group">
+            <div className="w-12 h-12 bg-[#bbad79] rounded-xl flex items-center justify-center group-hover:bg-[#9a9163] transition-all shadow-lg" style={{ backgroundColor: '#bbad79' }}>
+              <FaFileAlt className="text-white text-xl" />
             </div>
-            <span className="font-bold text-2xl text-white">MN Resume Builder</span>
+            <span className="font-bold text-xl text-white">MN Resume Builder</span>
           </Link>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/20">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-            <p className="text-gray-600">Sign in to continue building your career</p>
+        <div 
+          className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl"
+          style={{ 
+            padding: '24px 20px',
+            boxSizing: 'border-box',
+            width: '100%'
+          }}
+        >
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+            <p className="text-gray-600 text-sm">Sign in to continue building your career</p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl mb-6 flex items-center">
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl mb-4 flex items-center">
               <span className="text-lg mr-2">⚠️</span>
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Input */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
@@ -93,8 +140,9 @@ const Login = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#bbad79] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#bbad79] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                   placeholder="you@example.com"
+                  style={{ fontSize: '16px', minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
                 />
               </div>
             </div>
@@ -110,8 +158,9 @@ const Login = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-14 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#bbad79] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                  className="w-full pl-12 pr-14 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#bbad79] focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                   placeholder="••••••••"
+                  style={{ fontSize: '16px', minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
                 />
                 <button
                   type="button"
@@ -128,12 +177,12 @@ const Login = () => {
             </div>
 
             {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <label className="flex items-center cursor-pointer">
                 <input type="checkbox" className="w-4 h-4 text-[#bbad79] border-gray-300 rounded focus:ring-[#bbad79] cursor-pointer" />
                 <span className="ml-2 text-sm text-gray-600">Remember me</span>
               </label>
-              <Link to="/forgot-password" className="text-sm text-[#bbad79] hover:text-[#9a9163] font-medium">
+              <Link to="/forgot-password" className="text-sm text-[#bbad79] hover:text-[#9a9163] font-medium text-right sm:text-left">
                 Forgot password?
               </Link>
             </div>
@@ -143,6 +192,7 @@ const Login = () => {
               type="submit"
               disabled={loading}
               className="w-full py-4 bg-gradient-to-r from-[#bbad79] to-[#9a9163] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#bbad79]/30 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              style={{ minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -157,7 +207,7 @@ const Login = () => {
           </form>
 
           {/* Divider */}
-          <div className="relative my-8">
+          <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
             </div>
@@ -167,19 +217,25 @@ const Login = () => {
           </div>
 
           {/* Social Login Buttons */}
-          <div className="grid grid-cols-2 gap-4">
-            <button className="flex items-center justify-center py-3.5 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group">
+          <div className="flex flex-col gap-3">
+            <button 
+              className="flex items-center justify-center py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group w-full"
+              style={{ minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
+            >
               <FaGoogle className="text-gray-600 group-hover:text-[#bbad79] transition-colors mr-2" />
               <span className="text-gray-700 font-medium">Google</span>
             </button>
-            <button className="flex items-center justify-center py-3.5 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group">
+            <button 
+              className="flex items-center justify-center py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group w-full"
+              style={{ minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
+            >
               <FaGithub className="text-gray-600 group-hover:text-[#bbad79] transition-colors mr-2" />
               <span className="text-gray-700 font-medium">GitHub</span>
             </button>
           </div>
 
           {/* Sign Up Link */}
-          <p className="mt-8 text-center text-gray-600">
+          <p className="mt-6 text-center text-gray-600 text-sm">
             Don't have an account?{' '}
             <Link to="/signup" className="text-[#bbad79] hover:text-[#9a9163] font-semibold">
               Sign up for free
@@ -188,8 +244,8 @@ const Login = () => {
         </div>
 
         {/* Back to Home */}
-        <div className="text-center mt-8">
-          <Link to="/" className="text-gray-400 hover:text-white transition-colors inline-flex items-center">
+        <div className="text-center mt-6 pb-4">
+          <Link to="/" className="text-gray-400 hover:text-white transition-colors inline-flex items-center text-sm">
             <span className="mr-2">←</span> Back to Home
           </Link>
         </div>
