@@ -152,31 +152,106 @@ const ResumeBuilder = () => {
           {templates.map((template) => (<button key={template.id} onClick={() => setSelectedTemplate(template.id)} className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap min-h-[44px] ${selectedTemplate === template.id ? 'bg-[#bbad79] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>{template.name}</button>))}
         </div>
       </div>
-      <div className="flex-1 flex flex-col lg:flex-row overflow-x-hidden">
-        <div className={`${showSplitView ? 'lg:w-1/2' : 'w-full'} overflow-y-auto ${viewMode === 'preview' && !isMobile ? 'hidden' : ''} ${isMobile && viewMode === 'preview' ? 'hidden' : ''}`}>
-          <div className="bg-white border-b overflow-x-auto whitespace-nowrap scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
-            <div className="flex px-4">{sections.map((section) => (<button key={section.id} onClick={() => setActiveSection(section.id)} className={`flex items-center space-x-2 px-4 py-4 border-b-2 whitespace-nowrap min-h-[48px] ${activeSection === section.id ? 'border-[#bbad79] text-[#bbad79]' : 'border-transparent text-gray-600'}`}>{section.icon}<span className="text-sm">{section.label}</span></button>))}</div>
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        {/* Editor Panel */}
+        <div className={`${
+          showSplitView ? 'lg:w-1/2' : 'w-full'
+        } overflow-y-auto transition-all duration-300 ${
+          (viewMode === 'preview' && isMobile) ? 'hidden' : ''
+        }`}>
+          <div className="bg-white border-b scrollbar-hide-mobile overflow-x-auto whitespace-nowrap" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div className="flex px-4 py-2">
+              {sections.map((section) => (
+                <button 
+                  key={section.id} 
+                  onClick={() => setActiveSection(section.id)} 
+                  className={`flex items-center space-x-2 px-4 py-3 border-b-2 whitespace-nowrap min-h-[44px] rounded-b-none transition-all ${
+                    activeSection === section.id 
+                      ? 'border-[#bbad79] text-[#bbad79] bg-[#bbad79]/5' 
+                      : 'border-transparent text-gray-600 hover:text-[#bbad79] hover:border-[#bbad79]/30'
+                  }`}
+                >
+                  {section.icon}
+                  <span className="text-xs sm:text-sm font-medium">{section.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="p-4 sm:p-6"><div className="max-w-2xl mx-auto"><h2 className="text-lg font-semibold text-gray-900 mb-4">{sections.find(s => s.id === activeSection)?.label}</h2>{renderForm()}</div></div>
+          <div className="p-4 sm:p-6 lg:p-8">
+            <div className="max-w-2xl mx-auto">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 template-safe">
+                {sections.find(s => s.id === activeSection)?.label} Information
+              </h2>
+              {renderForm()}
+            </div>
+          </div>
         </div>
+
+        {/* Preview Panel */}
         {(showSplitView || viewMode === 'preview') && (
-          <div className={`${showSplitView ? 'lg:w-1/2' : 'w-full'} bg-gray-200 overflow-y-auto p-4 sm:p-8 ${isMobile && viewMode === 'edit' ? 'hidden lg:block' : ''}`}>
-            <div className="max-w-[210mm] mx-auto bg-white shadow-2xl" ref={resumeRef}><TemplateRenderer templateId={selectedTemplate} data={resumeData} /></div>
+          <div className={`
+            ${showSplitView ? 'lg:w-1/2' : 'w-full'}
+            bg-gradient-to-br from-gray-50 to-gray-200 overflow-hidden transition-all duration-300
+            ${isMobile && viewMode === 'edit' ? 'hidden lg:block' : ''}
+          `}>
+            <div className="sticky top-0 p-4 sm:p-6 lg:p-8 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900 template-safe">
+                  Live Preview
+                </h3>
+                <span className="text-xs text-gray-500 hidden sm:inline">
+                  {window.innerWidth < 768 ? 'Mobile' : window.innerWidth < 1024 ? 'Tablet' : 'Desktop'} View
+                </span>
+              </div>
+            </div>
+            <div className="resume-preview-wrapper mx-auto p-4 sm:p-6 lg:p-8 overflow-auto scrollbar-hide-mobile max-h-screen">
+            <div 
+                className={`
+                  bg-white shadow-2xl border border-gray-200 rounded-2xl overflow-hidden
+                  transition-all duration-500 resume-preview-wrapper
+                  ${window.innerWidth < 640 ? 'preview-scale-mobile max-w-preview-mobile' : ''}
+                  ${window.innerWidth < 768 ? 'preview-scale-sm max-w-preview-sm' : ''}
+                  ${window.innerWidth < 1024 ? 'preview-scale-md max-w-preview-md' : ''}
+                  ${window.innerWidth < 1280 ? 'preview-scale-lg max-w-preview-lg' : ''}
+                  ${window.innerWidth >= 1280 ? 'preview-scale-xl max-w-preview-xl' : ''}
+                `} 
+                ref={resumeRef}
+              >
+                <TemplateRenderer templateId={selectedTemplate} data={resumeData} />
+              </div>
+            </div>
           </div>
         )}
       </div>
+      {/* Mobile Floating Action Button - Non-overlapping */}
       {isMobile && (
-        <div className="fixed bottom-4 right-4 z-50">
-          <button onClick={() => setViewMode(viewMode === 'edit' ? 'preview' : 'edit')} className={`flex items-center space-x-2 px-5 py-3 rounded-full shadow-lg text-white font-medium min-h-[48px] min-w-[48px] ${viewMode === 'edit' ? 'bg-[#bbad79]' : 'bg-gray-700'}`}>{viewMode === 'edit' ? <><FaEye /><span>Preview</span></> : <><FaEyeSlash /><span>Edit</span></>}</button>
+        <div className="fixed bottom-20 sm:bottom-6 right-6 z-50 pointer-events-auto">
+          <button 
+            onClick={() => setViewMode(viewMode === 'edit' ? 'preview' : 'edit')} 
+            className={`
+              flex items-center space-x-2 px-4 py-3 sm:px-5 sm:py-4 
+              rounded-full shadow-2xl backdrop-blur-md border border-white/20
+              text-white font-semibold text-sm sm:text-base min-h-[48px] min-w-[120px]
+              transition-all duration-300 hover:scale-105 active:scale-95
+              ${viewMode === 'edit' ? 'bg-gradient-to-r from-[#bbad79] to-[#9a9163] shadow-[#bbad79]/30' : 'bg-gradient-to-r from-gray-700 to-gray-800 shadow-gray-500/30'}
+            `}
+          >
+            {viewMode === 'edit' ? (
+              <>
+                <FaEye className="w-4 h-4" />
+                <span>Preview</span>
+              </>
+            ) : (
+              <>
+                <FaEyeSlash className="w-4 h-4" />
+                <span>Edit</span>
+              </>
+            )}
+          </button>
         </div>
       )}
-      <style>{`
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        @media (max-width: 767px) {
-          .max-w-full.overflow-x-hidden { overflow-x: hidden !important; }
-        }
-      `}</style>
+
+      {/* Inline styles deprecated - All moved to Tailwind */}
     </div>
   );
 };

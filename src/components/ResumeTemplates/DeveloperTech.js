@@ -10,7 +10,7 @@ const DeveloperTech = ({ data }) => {
   };
 
   return (
-    <div className="bg-white p-8 min-h-[1123px] text-sm font-mono">
+    <div className="bg-white p-4 sm:p-6 lg:p-8 min-h-screen sm:min-h-[900px] text-xs sm:text-sm font-mono template-safe">
       {/* Header - Tech Style */}
       <header className="mb-8 pb-6 border-b-4 border-gray-900">
         <div className="flex items-start justify-between">

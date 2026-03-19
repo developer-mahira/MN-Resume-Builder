@@ -1,29 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { FaBars, FaTimes, FaFileAlt, FaUser, FaSignOutAlt, FaHome, FaThLarge, FaSearch, FaChartLine, FaEnvelope } from 'react-icons/fa';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout, loading } = useAuth();
 
+  // Auto sync with Firebase auth - no localStorage needed
   useEffect(() => {
-    const savedUser = localStorage.getItem('rba_current_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-  }, [location]);
+    if (loading) return;
+  }, [user, loading]);
 
   // Close mobile menu when route changes
   useEffect(() => {
     setIsOpen(false);
   }, [location]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('rba_current_user');
-    setUser(null);
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
   };
 
   const navLinks = [

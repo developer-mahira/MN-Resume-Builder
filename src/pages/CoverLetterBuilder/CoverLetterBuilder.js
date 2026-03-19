@@ -226,9 +226,39 @@ const CoverLetterBuilder = () => {
             </div>
           </div>
         </div>
-        {(showSplitView || (viewMode === 'preview' && isMobile)) && (
-          <div className={`${showSplitView ? 'w-1/2' : 'w-full'} bg-gray-200 overflow-y-auto p-4 sm:p-8 ${viewMode === 'edit' && isMobile ? 'hidden lg:block' : ''}`}>
-            <div className="max-w-[210mm] mx-auto bg-white shadow-2xl" ref={coverLetterRef}>{renderTemplate(false)}</div>
+        {/* Preview Panel */}
+        {(showSplitView || viewMode === 'preview') && (
+          <div className={`
+            ${showSplitView ? 'lg:w-1/2' : 'w-full'}
+            bg-gradient-to-br from-gray-50 to-gray-200 overflow-hidden transition-all duration-300
+            ${isMobile && viewMode === 'edit' ? 'hidden lg:block' : ''}
+          `}>
+            <div className="sticky top-0 p-4 sm:p-6 lg:p-8 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900 template-safe">
+                  Cover Letter Preview
+                </h3>
+                <span className="text-xs text-gray-500 hidden sm:inline">
+                  Responsive View
+                </span>
+              </div>
+            </div>
+            <div className="resume-preview-wrapper mx-auto p-4 sm:p-6 lg:p-8 overflow-auto scrollbar-hide-mobile max-h-screen">
+              <div 
+                className={`
+                  bg-white shadow-2xl border border-gray-200 rounded-2xl overflow-hidden
+                  transition-all duration-500 resume-preview-wrapper
+                  ${window.innerWidth < 640 ? 'preview-scale-mobile max-w-preview-mobile' : ''}
+                  ${window.innerWidth < 768 ? 'preview-scale-sm max-w-preview-sm' : ''}
+                  ${window.innerWidth < 1024 ? 'preview-scale-md max-w-preview-md' : ''}
+                  ${window.innerWidth < 1280 ? 'preview-scale-lg max-w-preview-lg' : ''}
+                  ${window.innerWidth >= 1280 ? 'preview-scale-xl max-w-preview-xl' : ''}
+                `} 
+                ref={coverLetterRef}
+              >
+                {renderTemplate(false)}
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -10,7 +10,7 @@ const CorporateClassic = ({ data }) => {
   };
 
   return (
-    <div className="bg-white p-8 min-h-[1123px] text-sm font-serif">
+    <div className="bg-white p-4 sm:p-6 lg:p-8 min-h-screen sm:min-h-[900px] text-xs sm:text-sm font-serif template-safe">
       {/* Header - Classic Two-Line Format */}
       <header className="pb-6 mb-6 border-b-2 border-gray-800">
         <h1 className="text-4xl font-bold text-gray-900 mb-2 uppercase tracking-wider">

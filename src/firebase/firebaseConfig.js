@@ -5,12 +5,13 @@ import { getFirestore } from "firebase/firestore";
 // Firebase configuration
 // Replace these values with your Firebase project credentials
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDJhQf6lx5wHVt4rfUG19BFWkCAwmDJy1M",
+  authDomain: "mn-resume-builder.firebaseapp.com",
+  projectId: "mn-resume-builder",
+  storageBucket: "mn-resume-builder.firebasestorage.app",
+  messagingSenderId: "796423107366",
+  appId: "1:796423107366:web:1990398e577ca38a1a87e7",
+  measurementId: "G-2G1HSYELX5"
 };
 
 // Initialize Firebase

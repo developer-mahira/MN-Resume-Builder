@@ -14,8 +14,8 @@ const SidebarResume = ({ data }) => {
       {/* Left Sidebar - Dark Background */}
       <aside className="w-72 bg-gray-900 text-white p-6 min-h-[1123px] flex-shrink-0">
         {/* Profile Photo Placeholder */}
-        <div className="w-24 h-24 bg-gray-700 rounded-full mx-auto mb-6 flex items-center justify-center">
-          <span className="text-4xl font-light text-gray-400">
+        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-700 rounded-full mx-auto mb-6 flex items-center justify-center">
+          <span className="text-2xl sm:text-4xl font-light text-gray-400">
             {personal.firstName ? personal.firstName[0] : 'P'}{personal.lastName ? personal.lastName[0] : ''}
           </span>
         </div>

@@ -10,7 +10,7 @@ const MinimalProfessional = ({ data }) => {
   };
 
   return (
-    <div className="bg-white p-8 min-h-[1123px] text-sm font-sans">
+    <div className="bg-white p-4 sm:p-6 lg:p-8 min-h-screen sm:min-h-[900px] text-xs sm:text-sm font-sans template-safe">
       {/* Header - Clean and Centered */}
       <header className="text-center pb-6 mb-8 border-b border-gray-200">
         <h1 className="text-3xl font-bold text-gray-900 tracking-tight mb-3">

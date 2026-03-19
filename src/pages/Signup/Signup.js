@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { FaEnvelope, FaLock, FaUser, FaEye, FaEyeSlash, FaFileAlt, FaCheck, FaTimes, FaGoogle, FaGithub } from 'react-icons/fa';
 
 const Signup = () => {
@@ -11,9 +12,12 @@ const Signup = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [formLoading, setFormLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const navigate = useNavigate();
+  const { loginWithGoogle, loginWithGithub, error: authError } = useAuth();
 
   const handleChange = (e) => {
     setFormData({
@@ -58,14 +62,14 @@ const Signup = () => {
       return;
     }
 
-    setLoading(true);
+    setFormLoading(true);
 
     try {
       const users = JSON.parse(localStorage.getItem('rba_users') || '[]');
       
       if (users.find(u => u.email === formData.email)) {
         setError('An account with this email already exists');
-        setLoading(false);
+        setFormLoading(false);
         return;
       }
       
@@ -93,7 +97,7 @@ const Signup = () => {
       }, 1000);
     } catch (err) {
       setError('Failed to create account. Please try again.');
-      setLoading(false);
+      setFormLoading(false);
     }
   };
 
@@ -314,7 +318,7 @@ const Signup = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={formLoading}
               className="w-full py-4 bg-gradient-to-r from-[#bbad79] to-[#9a9163] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#bbad79]/30 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               style={{ minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
             >
