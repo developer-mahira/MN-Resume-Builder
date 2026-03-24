@@ -10,7 +10,7 @@ const CreativeDesigner = ({ data }) => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 lg:p-8 min-h-screen sm:min-h-[900px] text-xs sm:text-sm template-safe" style={{ fontFamily: 'Georgia, serif' }}>
+    <div className="bg-white p-8 min-h-full text-[13px] leading-6 template-safe" style={{ fontFamily: 'Georgia, serif' }}>
       {/* Creative Header - Left Aligned with Accent */}
       <header className="mb-8 relative">
         <div className="absolute left-0 top-0 w-2 h-full bg-gradient-to-b from-[#e74c3c] to-[#9b59b6]"></div>
@@ -122,7 +122,7 @@ const CreativeDesigner = ({ data }) => {
           </h2>
           {education.map((edu, index) => (
             <div key={index} className="mb-4 p-3 bg-gray-50 rounded-lg">
-              <div className="flex justify-between items-start">
+              <div className="flex flex-wrap justify-between items-start gap-x-4 gap-y-2">
                 <div>
                   <h3 className="font-bold text-gray-900">{edu.degree || 'Degree'}</h3>
                   <p className="text-[#27ae60]">{edu.institution || 'Institution'}</p>

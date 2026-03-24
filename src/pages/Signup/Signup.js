@@ -13,11 +13,10 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [formLoading, setFormLoading] = useState(false);
-  const [socialLoading, setSocialLoading] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [activeSocialProvider, setActiveSocialProvider] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const navigate = useNavigate();
-  const { loginWithGoogle, loginWithGithub, error: authError } = useAuth();
+  const { signupWithEmail, loginWithGoogle, loginWithGithub } = useAuth();
 
   const handleChange = (e) => {
     setFormData({
@@ -65,38 +64,19 @@ const Signup = () => {
     setFormLoading(true);
 
     try {
-      const users = JSON.parse(localStorage.getItem('rba_users') || '[]');
-      
-      if (users.find(u => u.email === formData.email)) {
-        setError('An account with this email already exists');
-        setFormLoading(false);
-        return;
-      }
-      
-      const newUser = { 
-        email: formData.email, 
-        name: formData.name, 
+      await signupWithEmail({
+        name: formData.name,
+        email: formData.email,
         password: formData.password,
-        createdAt: new Date().toISOString()
-      };
-      
-      users.push(newUser);
-      localStorage.setItem('rba_users', JSON.stringify(users));
-      
-      localStorage.setItem('rba_current_user', JSON.stringify(newUser));
-      
+      });
+
       const redirectUrl = localStorage.getItem('rba_redirect_after_login');
       localStorage.removeItem('rba_redirect_after_login');
-      
-      setTimeout(() => {
-        if (redirectUrl) {
-          navigate(redirectUrl);
-        } else {
-          navigate('/dashboard');
-        }
-      }, 1000);
+
+      navigate(redirectUrl || '/dashboard');
     } catch (err) {
-      setError('Failed to create account. Please try again.');
+      setError(err.message || 'Failed to create account. Please try again.');
+    } finally {
       setFormLoading(false);
     }
   };
@@ -322,7 +302,7 @@ const Signup = () => {
               className="w-full py-4 bg-gradient-to-r from-[#bbad79] to-[#9a9163] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#bbad79]/30 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               style={{ minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
             >
-              {loading ? (
+              {formLoading ? (
                 <span className="flex items-center justify-center">
                   <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -347,18 +327,56 @@ const Signup = () => {
           {/* Social Login Buttons */}
           <div className="flex flex-col gap-3">
             <button 
-              className="flex items-center justify-center py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group w-full"
+              onClick={async () => {
+                setActiveSocialProvider('google');
+                setError('');
+                try {
+                  const result = await loginWithGoogle();
+                  if (!result?.redirecting) {
+                    const redirectUrl = localStorage.getItem('rba_redirect_after_login');
+                    localStorage.removeItem('rba_redirect_after_login');
+                    navigate(redirectUrl || '/dashboard');
+                  }
+                } catch (err) {
+                  setError(err.message || 'Google sign up failed. Please try again.');
+                } finally {
+                  setActiveSocialProvider('');
+                }
+              }}
+              disabled={!!activeSocialProvider}
+              className="flex items-center justify-center py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group w-full disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
             >
               <FaGoogle className="text-gray-600 group-hover:text-[#bbad79] transition-colors mr-2" />
-              <span className="text-gray-700 font-medium">Google</span>
+              <span className="text-gray-700 font-medium">
+                {activeSocialProvider === 'google' ? 'Connecting...' : 'Google'}
+              </span>
             </button>
             <button 
-              className="flex items-center justify-center py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group w-full"
+              onClick={async () => {
+                setActiveSocialProvider('github');
+                setError('');
+                try {
+                  const result = await loginWithGithub();
+                  if (!result?.redirecting) {
+                    const redirectUrl = localStorage.getItem('rba_redirect_after_login');
+                    localStorage.removeItem('rba_redirect_after_login');
+                    navigate(redirectUrl || '/dashboard');
+                  }
+                } catch (err) {
+                  setError(err.message || 'GitHub sign up failed. Please try again.');
+                } finally {
+                  setActiveSocialProvider('');
+                }
+              }}
+              disabled={!!activeSocialProvider}
+              className="flex items-center justify-center py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group w-full disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
             >
               <FaGithub className="text-gray-600 group-hover:text-[#bbad79] transition-colors mr-2" />
-              <span className="text-gray-700 font-medium">GitHub</span>
+              <span className="text-gray-700 font-medium">
+                {activeSocialProvider === 'github' ? 'Connecting...' : 'GitHub'}
+              </span>
             </button>
           </div>
 

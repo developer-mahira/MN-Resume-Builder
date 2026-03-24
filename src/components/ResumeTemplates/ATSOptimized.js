@@ -10,7 +10,7 @@ const ATSOptimized = ({ data }) => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 lg:p-8 min-h-screen sm:min-h-[900px] text-xs sm:text-sm template-safe">
+    <div className="bg-white p-8 min-h-full text-[13px] leading-6 template-safe">
       {/* Header - Simple and Clean */}
       <header className="mb-6 pb-4 border-b border-gray-300">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">

@@ -28,15 +28,15 @@ const Footer = () => {
   return (
     <footer className="bg-gradient-to-b from-gray-900 to-black text-white">
       {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-2">
-            <Link to="/" className="flex items-center space-x-3 mb-6 group">
+            <Link to="/" className="flex items-center space-x-3 mb-6 group min-w-0">
               <div className="w-12 h-12 bg-[#bbad79] rounded-xl flex items-center justify-center group-hover:bg-[#9a9163] transition-colors">
                 <FaFileAlt className="text-white text-xl" />
               </div>
-              <span className="font-bold text-2xl">MN Resume Builder</span>
+              <span className="font-bold text-xl sm:text-2xl break-words">MN Resume Builder</span>
             </Link>
             <p className="text-gray-400 mb-6 max-w-md leading-relaxed">
               Helping professionals build stronger careers. Create professional resumes, 
@@ -113,16 +113,16 @@ const Footer = () => {
         {/* Contact Info */}
         <div className="mt-12 pt-8 border-t border-gray-800">
           <div className="flex flex-wrap justify-between items-center gap-6">
-            <div className="flex flex-wrap gap-6 text-gray-400">
-              <a href="mailto:support@mnresumebuilder.com" className="flex items-center gap-2 hover:text-[#bbad79] transition-colors">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6 text-gray-400 w-full">
+              <a href="mailto:support@mnresumebuilder.com" className="flex items-start sm:items-center gap-2 hover:text-[#bbad79] transition-colors break-all">
                 <FaEnvelope className="text-[#bbad79]" />
                 support@mnresumebuilder.com
               </a>
-              <span className="flex items-center gap-2">
+              <span className="flex items-start sm:items-center gap-2">
                 <FaPhone className="text-[#bbad79]" />
                 +1 (555) 123-4567
               </span>
-              <span className="flex items-center gap-2">
+              <span className="flex items-start sm:items-center gap-2">
                 <FaMapMarker className="text-[#bbad79]" />
                 Karachi, Pakistan
               </span>
@@ -134,7 +134,7 @@ const Footer = () => {
       {/* Bottom Bar */}
       <div className="bg-black py-6 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm gap-4">
+          <div className="flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm gap-4 text-center md:text-left">
             <div className="flex items-center gap-2">
               <p>Created by Mahira Noor — © {currentYear} All Rights Reserved</p>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaDownload, FaEye, FaEyeSlash, FaUser, FaBuilding, FaPencilAlt } from 'react-icons/fa';
 import html2pdf from 'html2pdf.js';
@@ -6,6 +6,7 @@ import html2pdf from 'html2pdf.js';
 const CoverLetterBuilder = () => {
   const [showPreview, setShowPreview] = useState(true);
   const [viewMode, setViewMode] = useState('edit');
+  const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
   const coverLetterRef = useRef();
 
   const [coverLetterData, setCoverLetterData] = useState({
@@ -43,18 +44,40 @@ const CoverLetterBuilder = () => {
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
 
   const renderModernTemplate = (isPreview) => {
-    const p = isPreview ? 6 : 40;
-    const fs = isPreview ? 5 : 14;
+    const p = isPreview ? 18 : 40;
+    const fs = isPreview ? 12 : 14;
     return (
-      <div className="bg-white w-full h-full" style={{ fontFamily: 'Inter, sans-serif', fontSize: fs, lineHeight: 1.7 }}>
-        <div style={{ backgroundColor: '#1a2332', padding: p, marginLeft: -p, marginRight: -p, marginTop: -p }}>
-          <h1 className="text-2xl font-bold text-white mb-2">{coverLetterData.yourName || 'Your Name'}</h1>
-          <div className="flex flex-wrap gap-2 text-gray-400 text-xs">
-            {coverLetterData.yourEmail && <span>{coverLetterData.yourEmail}</span>}
-            {coverLetterData.yourPhone && <span> | {coverLetterData.yourPhone}</span>}
+      <div
+        className="bg-white w-full h-full min-h-full template-safe"
+        style={{
+          fontFamily: 'Inter, sans-serif',
+          fontSize: fs,
+          lineHeight: 1.7,
+          padding: isPreview ? 18 : 32
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: '#1a2332',
+            paddingTop: isPreview ? 22 : 30,
+            paddingRight: p,
+            paddingBottom: isPreview ? 18 : 24,
+            paddingLeft: p,
+            borderRadius: 18
+          }}
+        >
+          <div className="space-y-4">
+            <h1 className={`${isPreview ? 'text-xl' : 'text-3xl'} font-bold text-white leading-tight break-words max-w-full`}>
+              {coverLetterData.yourName || 'Your Name'}
+            </h1>
+            <div className={`flex flex-wrap items-center gap-x-2 gap-y-1 text-gray-300 max-w-full ${isPreview ? 'text-xs leading-5' : 'text-sm leading-6'}`}>
+              {coverLetterData.yourEmail && <span className="break-all max-w-full">{coverLetterData.yourEmail}</span>}
+              {coverLetterData.yourEmail && coverLetterData.yourPhone && <span className="text-gray-500">|</span>}
+              {coverLetterData.yourPhone && <span className="break-words">{coverLetterData.yourPhone}</span>}
+            </div>
           </div>
         </div>
-        <div style={{ height: 3, backgroundColor: '#d4af37', marginLeft: -p, marginRight: -p }} />
+        <div style={{ height: 3, backgroundColor: '#d4af37', marginTop: 8, borderRadius: 999 }} />
         <div style={{ padding: p }}>
           <div className="mb-4 text-gray-600">{coverLetterData.date && new Date(coverLetterData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
           <div className="mb-4">{coverLetterData.hiringManagerName && <div className="font-medium">{coverLetterData.hiringManagerName}</div>}{coverLetterData.companyName && <div>{coverLetterData.companyName}</div>}</div>
@@ -72,10 +95,10 @@ const CoverLetterBuilder = () => {
   };
 
   const renderClassicTemplate = (isPreview) => {
-    const p = isPreview ? 6 : 45;
-    const fs = isPreview ? 5 : 14;
+    const p = isPreview ? 16 : 45;
+    const fs = isPreview ? 12 : 14;
     return (
-      <div className="bg-white w-full h-full" style={{ fontFamily: 'Georgia, serif', fontSize: fs, lineHeight: 2 }}>
+      <div className="bg-white w-full h-full template-safe" style={{ fontFamily: 'Georgia, serif', fontSize: fs, lineHeight: 2 }}>
         <div style={{ padding: p }}>
           <h1 className="text-xl mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>{coverLetterData.yourName}</h1>
           <div style={{ borderBottom: '1px solid #374151', marginTop: 8 }} />
@@ -96,16 +119,29 @@ const CoverLetterBuilder = () => {
   };
 
   const renderCreativeTemplate = (isPreview) => {
-    const p = isPreview ? 4 : 35;
-    const fs = isPreview ? 5 : 14;
+    const p = isPreview ? 20 : 35;
+    const fs = isPreview ? 12 : 14;
     return (
-      <div className="bg-white w-full h-full flex" style={{ fontFamily: 'Nunito, sans-serif', fontSize: fs, lineHeight: 1.7 }}>
-        <div style={{ backgroundColor: '#0d7377', width: isPreview ? '25%' : '180px', padding: p }}>
+      <div
+        className="bg-white w-full h-full min-h-full template-safe"
+        style={{
+          fontFamily: 'Nunito, sans-serif',
+          fontSize: fs,
+          lineHeight: 1.7,
+          display: 'grid',
+          gridTemplateColumns: '180px minmax(0, 1fr)',
+          minHeight: '100%'
+        }}
+      >
+        <div
+          className="min-h-full h-full"
+          style={{ backgroundColor: '#0d7377', padding: p }}
+        >
           <h1 className="text-base font-bold text-white mb-2">{coverLetterData.yourName}</h1>
           <div style={{ width: 8, height: 8, backgroundColor: '#3d2c8d', borderRadius: '50%', marginBottom: 8 }} />
-          <div className="text-white/90 text-xs">{coverLetterData.yourEmail && <div className="break-all">{coverLetterData.yourEmail}</div>}{coverLetterData.yourPhone && <div>{coverLetterData.yourPhone}</div>}</div>
+          <div className="text-white/90 text-xs">{coverLetterData.yourEmail && <div className="break-all">{coverLetterData.yourEmail}</div>}{coverLetterData.yourPhone && <div className="break-words">{coverLetterData.yourPhone}</div>}</div>
         </div>
-        <div className="flex-1 p-5" style={{ padding: p }}>
+        <div className="min-w-0 min-h-full" style={{ padding: p }}>
           <div className="flex gap-2 mb-5"><div style={{ width: 20, height: 3, backgroundColor: '#3d2c8d' }} /><div style={{ width: 40, height: 3, backgroundColor: '#0d7377' }} /></div>
           <div className="mb-4 text-gray-500">{coverLetterData.date && new Date(coverLetterData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
           <div className="mb-4">{coverLetterData.hiringManagerName && <div style={{ color: '#0d7377' }}>{coverLetterData.hiringManagerName}</div>}{coverLetterData.companyName && <div>{coverLetterData.companyName}</div>}</div>
@@ -123,14 +159,14 @@ const CoverLetterBuilder = () => {
   };
 
   const renderMinimalTemplate = (isPreview) => {
-    const p = isPreview ? 6 : 50;
-    const fs = isPreview ? 5 : 14;
+    const p = isPreview ? 16 : 50;
+    const fs = isPreview ? 12 : 14;
     return (
-      <div className="bg-white w-full h-full" style={{ backgroundColor: '#f9f9f9', fontFamily: 'DM Sans, sans-serif', fontSize: fs, lineHeight: 1.8, color: '#444' }}>
+      <div className="bg-white w-full h-full template-safe" style={{ backgroundColor: '#f9f9f9', fontFamily: 'DM Sans, sans-serif', fontSize: fs, lineHeight: 1.8, color: '#444' }}>
         <div style={{ padding: p, backgroundColor: '#f9f9f9' }}>
           <h1 className="text-lg font-light mb-2" style={{ fontWeight: 300 }}>{coverLetterData.yourName}</h1>
           <div style={{ borderBottom: '1px solid #e0e0e0', marginTop: 12, width: 60 }} />
-          <div className="flex gap-3 text-gray-400 mb-8 text-xs">{coverLetterData.yourEmail && <span>{coverLetterData.yourEmail}</span>}{coverLetterData.yourPhone && <span>• {coverLetterData.yourPhone}</span>}</div>
+          <div className="flex flex-wrap gap-3 text-gray-400 mb-8 text-xs">{coverLetterData.yourEmail && <span className="break-all">{coverLetterData.yourEmail}</span>}{coverLetterData.yourPhone && <span>• {coverLetterData.yourPhone}</span>}</div>
           <div className="mb-6">{coverLetterData.date && new Date(coverLetterData.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
           <div className="mb-6">{coverLetterData.hiringManagerName && <div>{coverLetterData.hiringManagerName}</div>}{coverLetterData.companyName && <div>{coverLetterData.companyName}</div>}</div>
           <div className="mb-5">Dear {coverLetterData.hiringManagerName || 'Hiring Manager'},</div>
@@ -156,21 +192,40 @@ const CoverLetterBuilder = () => {
     }
   };
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isMobile = viewportWidth < 1024;
   const showSplitView = showPreview && !isMobile;
+  const shouldShowPreviewPanel = isMobile ? viewMode === 'preview' : showPreview;
+  const shouldShowEditorPanel = !isMobile || viewMode === 'edit';
+  const documentWidth = 794;
+  const documentHeight = 1123;
+  const availablePreviewWidth = isMobile
+    ? Math.max(viewportWidth - 16, 280)
+    : showSplitView
+      ? Math.max((viewportWidth - 96) / 2, 360)
+      : Math.max(viewportWidth - 96, 360);
+  const previewScale = Math.min(1, availablePreviewWidth / documentWidth);
+  const scaledDocumentWidth = documentWidth * previewScale;
+  const scaledDocumentHeight = documentHeight * previewScale;
+  const previewShellWidth = isMobile ? '100%' : `${scaledDocumentWidth}px`;
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
-      <header className="bg-white shadow-sm py-3 px-3 sm:px-6 flex items-center justify-between">
-        <div className="flex items-center space-x-2 sm:space-x-4">
+      <header className="bg-white shadow-sm py-3 px-3 sm:px-6 flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
           <Link to="/dashboard" className="text-gray-600 hover:text-[#bbad79] text-sm sm:text-base">← Back</Link>
-          <h1 className="text-base sm:text-xl font-bold text-gray-900">Cover Letter Builder</h1>
+          <h1 className="text-base sm:text-xl font-bold text-gray-900 truncate">Cover Letter Builder</h1>
         </div>
-        <div className="flex items-center space-x-2 sm:space-x-4">
+        <div className="flex items-center flex-wrap justify-end gap-2 sm:gap-4 w-full sm:w-auto">
           <button onClick={() => setViewMode(viewMode === 'edit' ? 'preview' : 'edit')} className="lg:hidden flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-[#bbad79] min-w-[44px] min-h-[44px] justify-center">
             {viewMode === 'edit' ? <FaEye /> : <FaEyeSlash />}<span className="text-sm">{viewMode === 'edit' ? 'Preview' : 'Edit'}</span>
           </button>
-          <button onClick={() => setShowPreview(!showPreview)} className="hidden lg:flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-[#bbad79]">
+          <button onClick={() => { setShowPreview(!showPreview); setViewMode('edit'); }} className="hidden lg:flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-[#bbad79]">
             {showPreview ? <FaEyeSlash /> : <FaEye />}<span>{showPreview ? 'Hide Preview' : 'Show Preview'}</span>
           </button>
           <button onClick={downloadPDF} className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm min-h-[44px]">
@@ -193,7 +248,7 @@ const CoverLetterBuilder = () => {
         </div>
       </div>
       <div className="flex-1 flex flex-col lg:flex-row">
-        <div className={`${showSplitView ? 'w-1/2' : 'w-full'} overflow-y-auto ${viewMode === 'preview' && isMobile ? 'hidden' : ''}`}>
+        <div className={`${showSplitView ? 'lg:w-1/2' : 'w-full'} overflow-y-auto ${shouldShowEditorPanel ? '' : 'hidden'}`}>
           <div className="p-3 sm:p-6">
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm">
@@ -227,11 +282,10 @@ const CoverLetterBuilder = () => {
           </div>
         </div>
         {/* Preview Panel */}
-        {(showSplitView || viewMode === 'preview') && (
+        {shouldShowPreviewPanel && (
           <div className={`
             ${showSplitView ? 'lg:w-1/2' : 'w-full'}
             bg-gradient-to-br from-gray-50 to-gray-200 overflow-hidden transition-all duration-300
-            ${isMobile && viewMode === 'edit' ? 'hidden lg:block' : ''}
           `}>
             <div className="sticky top-0 p-4 sm:p-6 lg:p-8 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200">
               <div className="flex items-center justify-between">
@@ -243,20 +297,28 @@ const CoverLetterBuilder = () => {
                 </span>
               </div>
             </div>
-            <div className="resume-preview-wrapper mx-auto p-4 sm:p-6 lg:p-8 overflow-auto scrollbar-hide-mobile max-h-screen">
-              <div 
-                className={`
-                  bg-white shadow-2xl border border-gray-200 rounded-2xl overflow-hidden
-                  transition-all duration-500 resume-preview-wrapper
-                  ${window.innerWidth < 640 ? 'preview-scale-mobile max-w-preview-mobile' : ''}
-                  ${window.innerWidth < 768 ? 'preview-scale-sm max-w-preview-sm' : ''}
-                  ${window.innerWidth < 1024 ? 'preview-scale-md max-w-preview-md' : ''}
-                  ${window.innerWidth < 1280 ? 'preview-scale-lg max-w-preview-lg' : ''}
-                  ${window.innerWidth >= 1280 ? 'preview-scale-xl max-w-preview-xl' : ''}
-                `} 
-                ref={coverLetterRef}
+            <div className={`resume-preview-wrapper mx-auto overflow-y-auto overflow-x-hidden scrollbar-hide-mobile max-h-screen ${isMobile ? 'p-2' : 'p-4 sm:p-6 lg:p-8'}`}>
+              <div
+                className="document-shell relative"
+                style={{
+                  width: isMobile ? `${scaledDocumentWidth}px` : previewShellWidth,
+                  maxWidth: `${scaledDocumentWidth}px`,
+                  height: `${scaledDocumentHeight}px`,
+                  margin: '0 auto'
+                }}
               >
-                {renderTemplate(false)}
+                <div 
+                  className={`document-page absolute left-0 top-0 shadow-2xl border border-gray-200 overflow-hidden ${isMobile ? 'rounded-lg' : 'rounded-2xl'}`}
+                  ref={coverLetterRef}
+                  style={{
+                    width: `${documentWidth}px`,
+                    minHeight: `${documentHeight}px`,
+                    transform: `scale(${previewScale})`,
+                    transformOrigin: 'top left'
+                  }}
+                >
+                  {renderTemplate(false)}
+                </div>
               </div>
             </div>
           </div>

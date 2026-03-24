@@ -10,18 +10,18 @@ const SidebarResume = ({ data }) => {
   };
 
   return (
-    <div className="bg-white p-0 min-h-[1123px] text-sm flex">
+    <div className="bg-white p-0 min-h-[1123px] text-[13px] leading-6 grid grid-cols-[220px_minmax(0,1fr)] items-stretch template-safe">
       {/* Left Sidebar - Dark Background */}
-      <aside className="w-72 bg-gray-900 text-white p-6 min-h-[1123px] flex-shrink-0">
+      <aside className="w-[220px] min-h-[1123px] h-full bg-gray-900 text-white p-6 self-stretch">
         {/* Profile Photo Placeholder */}
-        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-700 rounded-full mx-auto mb-6 flex items-center justify-center">
-          <span className="text-2xl sm:text-4xl font-light text-gray-400">
+        <div className="w-24 h-24 bg-gray-700 rounded-full mx-auto mb-6 flex items-center justify-center">
+          <span className="text-4xl font-light text-gray-400">
             {personal.firstName ? personal.firstName[0] : 'P'}{personal.lastName ? personal.lastName[0] : ''}
           </span>
         </div>
 
         {/* Name in Sidebar */}
-        <h1 className="text-xl font-bold text-center mb-2">
+        <h1 className="text-[26px] leading-8 font-bold text-center mb-2 break-words">
           {personal.firstName || 'First'} {personal.lastName || 'Name'}
         </h1>
         <p className="text-gray-400 text-center text-xs mb-6">Professional Resume</p>
@@ -108,7 +108,7 @@ const SidebarResume = ({ data }) => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-8">
+      <main className="min-w-0 p-8">
         {/* Professional Summary */}
         {personal.summary && (
           <section className="mb-8">
@@ -129,12 +129,12 @@ const SidebarResume = ({ data }) => {
             </h2>
             {workExperience.map((work, index) => (
               <div key={index} className="mb-6 pl-4 border-l-2 border-gray-200">
-                <div className="flex justify-between items-start mb-2">
+                <div className="flex flex-wrap justify-between items-start gap-x-4 gap-y-1 mb-2">
                   <div>
                     <h3 className="font-bold text-gray-900">{work.jobTitle || 'Job Title'}</h3>
                     <p className="text-[#bbad79] font-medium">{work.company || 'Company Name'}</p>
                   </div>
-                  <span className="text-gray-500 text-sm whitespace-nowrap">
+                  <span className="text-gray-500 text-sm">
                     {formatDate(work.startDate)} — {work.endDate ? formatDate(work.endDate) : 'Present'}
                   </span>
                 </div>
@@ -155,12 +155,12 @@ const SidebarResume = ({ data }) => {
             </h2>
             {education.map((edu, index) => (
               <div key={index} className="mb-4 pl-4 border-l-2 border-gray-200">
-                <div className="flex justify-between items-start">
+                <div className="flex flex-wrap justify-between items-start gap-x-4 gap-y-1">
                   <div>
                     <h3 className="font-bold text-gray-900">{edu.degree || 'Degree'}</h3>
                     <p className="text-[#bbad79]">{edu.institution || 'Institution'}</p>
                   </div>
-                  <span className="text-gray-500 text-sm whitespace-nowrap">
+                  <span className="text-gray-500 text-sm">
                     {edu.startYear || 'Start'} — {edu.endYear || 'Present'}
                   </span>
                 </div>

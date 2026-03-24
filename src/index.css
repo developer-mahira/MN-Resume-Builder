@@ -40,31 +40,11 @@ body {
 /* Critical Responsiveness Utilities */
 @layer utilities {
   .template-safe {
-    @apply break-words overflow-hidden hyphens-auto leading-relaxed max-w-full;
+    @apply break-words leading-relaxed max-w-full;
   }
   
   .resume-preview-wrapper {
-    @apply w-full max-w-4xl mx-auto transform origin-top transition-transform duration-300;
-  }
-  
-  .preview-scale-mobile {
-    @apply scale-[0.65];
-  }
-  
-  .preview-scale-sm {
-    @apply scale-[0.75];
-  }
-  
-  .preview-scale-md {
-    @apply scale-[0.85];
-  }
-  
-  .preview-scale-lg {
-    @apply scale-[0.95];
-  }
-  
-  .preview-scale-xl {
-    @apply scale-100;
+    @apply w-full mx-auto transition-all duration-300;
   }
   
   /* Mobile scrollbar hiding */
@@ -155,5 +135,25 @@ body {
 .delay-300 { animation-delay: 300ms; }
 .delay-400 { animation-delay: 400ms; }
 .delay-500 { animation-delay: 500ms; }
+
+.document-shell {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.document-page {
+  width: 794px;
+  min-height: 1123px;
+  background: #ffffff;
+}
+
+.document-page,
+.document-page * {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: manual;
+}
 
 

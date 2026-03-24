@@ -1,37 +1,59 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaBriefcase, FaGraduationCap, FaCode, FaProjectDiagram, FaCertificate, FaLanguage, FaPlus, FaTrash, FaDownload, FaEye, FaEyeSlash } from 'react-icons/fa';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { FaUser, FaBriefcase, FaGraduationCap, FaCode, FaProjectDiagram, FaCertificate, FaLanguage, FaPlus, FaTrash, FaDownload, FaEye, FaEyeSlash, FaSave } from 'react-icons/fa';
 import html2pdf from 'html2pdf.js';
 import TemplateRenderer from '../../components/ResumeTemplates/TemplateRenderer';
 import { getAllTemplates } from '../../components/ResumeTemplates/TemplateRenderer';
+
+const createDefaultResumeData = () => ({
+  personal: { firstName: 'Mahira', lastName: 'Noor', email: '', phone: '', city: '', country: '', linkedin: '', portfolio: '', summary: '' },
+  skills: [],
+  workExperience: [],
+  education: [],
+  projects: [],
+  certifications: [],
+  languages: [],
+});
 
 const ResumeBuilder = () => {
   const [activeSection, setActiveSection] = useState('personal');
   const [showPreview, setShowPreview] = useState(true);
   const [viewMode, setViewMode] = useState('edit');
   const [selectedTemplate, setSelectedTemplate] = useState('minimal');
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
+  const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
+  const [searchParams, setSearchParams] = useSearchParams();
   const resumeRef = useRef();
-  const navigate = useNavigate();
+  const resumeId = searchParams.get('resumeId');
+  const requestedTemplate = searchParams.get('template');
+  const shouldAutoDownload = searchParams.get('download') === '1';
 
-  React.useEffect(() => {
-    const user = localStorage.getItem('rba_current_user');
-    if (!user) {
-      localStorage.setItem('rba_redirect_after_login', '/resume-builder');
-      navigate('/login');
-    }
-  }, [navigate]);
-
-  const [resumeData, setResumeData] = useState({
-    personal: { firstName: 'Mahira', lastName: 'Noor', email: '', phone: '', city: '', country: '', linkedin: '', portfolio: '', summary: '' },
-    skills: [],
-    workExperience: [],
-    education: [],
-    projects: [],
-    certifications: [],
-    languages: [],
-  });
+  const [resumeData, setResumeData] = useState(createDefaultResumeData);
 
   const [newSkill, setNewSkill] = useState('');
+
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!resumeId) {
+      setResumeData(createDefaultResumeData());
+      setSelectedTemplate(requestedTemplate || 'minimal');
+      return;
+    }
+
+    const resumes = JSON.parse(localStorage.getItem('rba_resumes') || '[]');
+    const existingResume = resumes.find((resume) => resume.id === resumeId);
+
+    if (existingResume) {
+      setResumeData(existingResume.data || createDefaultResumeData());
+      setSelectedTemplate(existingResume.template || 'minimal');
+    }
+  }, [requestedTemplate, resumeId]);
 
   const handleInputChange = useCallback((section, field, value) => {
     setResumeData(prev => ({ ...prev, [section]: { ...prev[section], [field]: value } }));
@@ -60,12 +82,64 @@ const ResumeBuilder = () => {
     setResumeData(prev => ({ ...prev, skills: prev.skills.filter((_, i) => i !== index) }));
   }, []);
 
-  const downloadPDF = () => {
+  const downloadPDF = useCallback(() => {
     const element = resumeRef.current;
     if (!element) return;
     const opt = { margin: 0, filename: `${resumeData.personal.firstName || 'resume'}_${resumeData.personal.lastName || 'builder'}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
     html2pdf().set(opt).from(element).save();
-  };
+  }, [resumeData.personal.firstName, resumeData.personal.lastName]);
+
+  useEffect(() => {
+    if (!shouldAutoDownload || !resumeId) return;
+
+    const timeoutId = window.setTimeout(() => {
+      downloadPDF();
+      setSearchParams((currentParams) => {
+        const nextParams = new URLSearchParams(currentParams);
+        nextParams.delete('download');
+        return nextParams;
+      });
+    }, 350);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [downloadPDF, resumeId, selectedTemplate, shouldAutoDownload, setSearchParams, resumeData]);
+
+  const saveResume = useCallback(() => {
+    setSaving(true);
+    setSaveMessage('');
+
+    const resumes = JSON.parse(localStorage.getItem('rba_resumes') || '[]');
+    const nextResumeId = resumeId || `resume-${Date.now()}`;
+    const displayName = `${resumeData.personal.firstName || 'Untitled'} ${resumeData.personal.lastName || 'Resume'}`.trim();
+    const nextResume = {
+      id: nextResumeId,
+      name: displayName,
+      template: selectedTemplate,
+      data: resumeData,
+      status: 'complete',
+      lastModified: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    };
+
+    const existingIndex = resumes.findIndex((resume) => resume.id === nextResumeId);
+    if (existingIndex >= 0) {
+      resumes[existingIndex] = nextResume;
+    } else {
+      resumes.unshift(nextResume);
+    }
+
+    localStorage.setItem('rba_resumes', JSON.stringify(resumes));
+
+    if (!resumeId) {
+      setSearchParams({ resumeId: nextResumeId });
+    }
+
+    setSaving(false);
+    setSaveMessage('Resume saved successfully.');
+
+    window.setTimeout(() => {
+      setSaveMessage('');
+    }, 2500);
+  }, [resumeData, resumeId, selectedTemplate, setSearchParams]);
 
   const sections = [
     { id: 'personal', label: 'Personal', icon: <FaUser className="w-4 h-4" /> },
@@ -78,8 +152,22 @@ const ResumeBuilder = () => {
   ];
 
   const templates = getAllTemplates();
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const isMobile = viewportWidth < 768;
   const showSplitView = showPreview && !isMobile;
+  const shouldShowPreviewPanel = isMobile ? viewMode === 'preview' : showPreview;
+  const shouldShowEditorPanel = !isMobile || viewMode === 'edit';
+  const documentWidth = 794;
+  const documentHeight = 1123;
+  const availablePreviewWidth = isMobile
+    ? Math.max(viewportWidth - 16, 280)
+    : showSplitView
+      ? Math.max((viewportWidth - 96) / 2, 360)
+      : Math.max(viewportWidth - 96, 360);
+  const previewScale = Math.min(1, availablePreviewWidth / documentWidth);
+  const scaledDocumentWidth = documentWidth * previewScale;
+  const scaledDocumentHeight = documentHeight * previewScale;
+  const previewShellWidth = isMobile ? '100%' : `${scaledDocumentWidth}px`;
+  const deviceLabel = viewportWidth < 768 ? 'Mobile' : viewportWidth < 1024 ? 'Tablet' : 'Desktop';
 
   const renderForm = () => {
     switch (activeSection) {
@@ -111,11 +199,11 @@ const ResumeBuilder = () => {
         );
       case 'work':
         return (
-          <div className="space-y-6">{resumeData.workExperience.map((work, index) => (<div key={index} className="p-4 bg-gray-50 rounded-lg relative"><button onClick={() => handleArrayRemove('workExperience', index)} className="absolute top-2 right-2 text-red-500 hover:text-red-700 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"><FaTrash /></button><div className="space-y-3"><input type="text" value={work.jobTitle || ''} onChange={(e) => handleArrayChange('workExperience', index, 'jobTitle', e.target.value)} placeholder="Job Title" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /><input type="text" value={work.company || ''} onChange={(e) => handleArrayChange('workExperience', index, 'company', e.target.value)} placeholder="Company" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /><div className="grid grid-cols-2 gap-3"><input type="month" value={work.startDate || ''} onChange={(e) => handleArrayChange('workExperience', index, 'startDate', e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /><input type="month" value={work.endDate || ''} onChange={(e) => handleArrayChange('workExperience', index, 'endDate', e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /></div><textarea value={work.description || ''} onChange={(e) => handleArrayChange('workExperience', index, 'description', e.target.value)} rows={3} placeholder="Description" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[100px] text-base" /></div></div>))}<button onClick={() => handleArrayAdd('workExperience', { jobTitle: '', company: '', startDate: '', endDate: '', description: '' })} className="w-full py-4 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-[#bbad79] hover:text-[#bbad79] min-h-[48px] flex items-center justify-center gap-2"><FaPlus /> Add Experience</button></div>
+          <div className="space-y-6">{resumeData.workExperience.map((work, index) => (<div key={index} className="p-4 bg-gray-50 rounded-lg relative"><button onClick={() => handleArrayRemove('workExperience', index)} className="absolute top-2 right-2 text-red-500 hover:text-red-700 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"><FaTrash /></button><div className="space-y-3"><input type="text" value={work.jobTitle || ''} onChange={(e) => handleArrayChange('workExperience', index, 'jobTitle', e.target.value)} placeholder="Job Title" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /><input type="text" value={work.company || ''} onChange={(e) => handleArrayChange('workExperience', index, 'company', e.target.value)} placeholder="Company" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /><div className="grid grid-cols-1 sm:grid-cols-2 gap-3"><input type="month" value={work.startDate || ''} onChange={(e) => handleArrayChange('workExperience', index, 'startDate', e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /><input type="month" value={work.endDate || ''} onChange={(e) => handleArrayChange('workExperience', index, 'endDate', e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /></div><textarea value={work.description || ''} onChange={(e) => handleArrayChange('workExperience', index, 'description', e.target.value)} rows={3} placeholder="Description" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[100px] text-base" /></div></div>))}<button onClick={() => handleArrayAdd('workExperience', { jobTitle: '', company: '', startDate: '', endDate: '', description: '' })} className="w-full py-4 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-[#bbad79] hover:text-[#bbad79] min-h-[48px] flex items-center justify-center gap-2"><FaPlus /> Add Experience</button></div>
         );
       case 'education':
         return (
-          <div className="space-y-6">{resumeData.education.map((edu, index) => (<div key={index} className="p-4 bg-gray-50 rounded-lg relative"><button onClick={() => handleArrayRemove('education', index)} className="absolute top-2 right-2 text-red-500 hover:text-red-700 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"><FaTrash /></button><div className="space-y-3"><input type="text" value={edu.degree || ''} onChange={(e) => handleArrayChange('education', index, 'degree', e.target.value)} placeholder="Degree" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /><input type="text" value={edu.institution || ''} onChange={(e) => handleArrayChange('education', index, 'institution', e.target.value)} placeholder="Institution" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /><div className="grid grid-cols-2 gap-3"><input type="number" value={edu.startYear || ''} onChange={(e) => handleArrayChange('education', index, 'startYear', e.target.value)} placeholder="Start Year" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /><input type="number" value={edu.endYear || ''} onChange={(e) => handleArrayChange('education', index, 'endYear', e.target.value)} placeholder="End Year" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /></div></div></div>))}<button onClick={() => handleArrayAdd('education', { degree: '', institution: '', startYear: '', endYear: '', gpa: '' })} className="w-full py-4 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-[#bbad79] hover:text-[#bbad79] min-h-[48px] flex items-center justify-center gap-2"><FaPlus /> Add Education</button></div>
+          <div className="space-y-6">{resumeData.education.map((edu, index) => (<div key={index} className="p-4 bg-gray-50 rounded-lg relative"><button onClick={() => handleArrayRemove('education', index)} className="absolute top-2 right-2 text-red-500 hover:text-red-700 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"><FaTrash /></button><div className="space-y-3"><input type="text" value={edu.degree || ''} onChange={(e) => handleArrayChange('education', index, 'degree', e.target.value)} placeholder="Degree" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /><input type="text" value={edu.institution || ''} onChange={(e) => handleArrayChange('education', index, 'institution', e.target.value)} placeholder="Institution" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /><div className="grid grid-cols-1 sm:grid-cols-2 gap-3"><input type="number" value={edu.startYear || ''} onChange={(e) => handleArrayChange('education', index, 'startYear', e.target.value)} placeholder="Start Year" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /><input type="number" value={edu.endYear || ''} onChange={(e) => handleArrayChange('education', index, 'endYear', e.target.value)} placeholder="End Year" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bbad79] min-h-[48px] text-base" /></div></div></div>))}<button onClick={() => handleArrayAdd('education', { degree: '', institution: '', startYear: '', endYear: '', gpa: '' })} className="w-full py-4 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-[#bbad79] hover:text-[#bbad79] min-h-[48px] flex items-center justify-center gap-2"><FaPlus /> Add Education</button></div>
         );
       case 'projects':
         return (
@@ -136,14 +224,15 @@ const ResumeBuilder = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col max-w-full overflow-x-hidden">
-      <header className="bg-white shadow-sm py-3 px-4 flex items-center justify-between flex-wrap gap-2">
+      <header className="bg-white shadow-sm py-3 px-4 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center space-x-3 min-w-0">
           <Link to="/dashboard" className="text-gray-600 hover:text-[#bbad79] text-sm whitespace-nowrap">← Back</Link>
           <h1 className="text-base font-bold text-gray-900 truncate max-w-[150px] sm:max-w-none">Resume Builder</h1>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center flex-wrap justify-end gap-2 w-full sm:w-auto">
           <button onClick={() => setViewMode(viewMode === 'edit' ? 'preview' : 'edit')} className="md:hidden flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-[#bbad79] min-w-[44px] min-h-[44px] justify-center"><FaEye /><span className="text-sm">{viewMode === 'edit' ? 'Preview' : 'Edit'}</span></button>
-          <button onClick={() => setShowPreview(!showPreview)} className="hidden md:flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-[#bbad79]"><FaEyeSlash /><span>{showPreview ? 'Hide' : 'Show'} Preview</span></button>
+          <button onClick={() => { setShowPreview(!showPreview); setViewMode('edit'); }} className="hidden md:flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-[#bbad79]">{showPreview ? <FaEyeSlash /> : <FaEye />}<span>{showPreview ? 'Hide' : 'Show'} Preview</span></button>
+          <button onClick={saveResume} className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-[#bbad79] text-white rounded-lg hover:bg-[#9a9163] text-sm min-h-[44px]"><FaSave /><span className="hidden sm:inline">{saving ? 'Saving...' : 'Save'}</span></button>
           <button onClick={downloadPDF} className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm min-h-[44px]"><FaDownload /><span className="hidden sm:inline">Download</span></button>
         </div>
       </header>
@@ -157,7 +246,7 @@ const ResumeBuilder = () => {
         <div className={`${
           showSplitView ? 'lg:w-1/2' : 'w-full'
         } overflow-y-auto transition-all duration-300 ${
-          (viewMode === 'preview' && isMobile) ? 'hidden' : ''
+          shouldShowEditorPanel ? '' : 'hidden'
         }`}>
           <div className="bg-white border-b scrollbar-hide-mobile overflow-x-auto whitespace-nowrap" style={{ WebkitOverflowScrolling: 'touch' }}>
             <div className="flex px-4 py-2">
@@ -182,17 +271,21 @@ const ResumeBuilder = () => {
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 template-safe">
                 {sections.find(s => s.id === activeSection)?.label} Information
               </h2>
+              {saveMessage && (
+                <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                  {saveMessage}
+                </div>
+              )}
               {renderForm()}
             </div>
           </div>
         </div>
 
         {/* Preview Panel */}
-        {(showSplitView || viewMode === 'preview') && (
+        {shouldShowPreviewPanel && (
           <div className={`
             ${showSplitView ? 'lg:w-1/2' : 'w-full'}
             bg-gradient-to-br from-gray-50 to-gray-200 overflow-hidden transition-all duration-300
-            ${isMobile && viewMode === 'edit' ? 'hidden lg:block' : ''}
           `}>
             <div className="sticky top-0 p-4 sm:p-6 lg:p-8 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200">
               <div className="flex items-center justify-between">
@@ -200,24 +293,32 @@ const ResumeBuilder = () => {
                   Live Preview
                 </h3>
                 <span className="text-xs text-gray-500 hidden sm:inline">
-                  {window.innerWidth < 768 ? 'Mobile' : window.innerWidth < 1024 ? 'Tablet' : 'Desktop'} View
+                  {deviceLabel} View
                 </span>
               </div>
             </div>
-            <div className="resume-preview-wrapper mx-auto p-4 sm:p-6 lg:p-8 overflow-auto scrollbar-hide-mobile max-h-screen">
-            <div 
-                className={`
-                  bg-white shadow-2xl border border-gray-200 rounded-2xl overflow-hidden
-                  transition-all duration-500 resume-preview-wrapper
-                  ${window.innerWidth < 640 ? 'preview-scale-mobile max-w-preview-mobile' : ''}
-                  ${window.innerWidth < 768 ? 'preview-scale-sm max-w-preview-sm' : ''}
-                  ${window.innerWidth < 1024 ? 'preview-scale-md max-w-preview-md' : ''}
-                  ${window.innerWidth < 1280 ? 'preview-scale-lg max-w-preview-lg' : ''}
-                  ${window.innerWidth >= 1280 ? 'preview-scale-xl max-w-preview-xl' : ''}
-                `} 
-                ref={resumeRef}
+            <div className={`resume-preview-wrapper mx-auto overflow-y-auto overflow-x-hidden scrollbar-hide-mobile max-h-screen ${isMobile ? 'p-2' : 'p-4 sm:p-6 lg:p-8'}`}>
+              <div
+                className="document-shell relative"
+                style={{
+                  width: isMobile ? `${scaledDocumentWidth}px` : previewShellWidth,
+                  maxWidth: `${scaledDocumentWidth}px`,
+                  height: `${scaledDocumentHeight}px`,
+                  margin: '0 auto'
+                }}
               >
-                <TemplateRenderer templateId={selectedTemplate} data={resumeData} />
+                <div 
+                  className={`document-page absolute left-0 top-0 shadow-2xl border border-gray-200 overflow-hidden ${isMobile ? 'rounded-lg' : 'rounded-2xl'}`}
+                  ref={resumeRef}
+                  style={{
+                    width: `${documentWidth}px`,
+                    minHeight: `${documentHeight}px`,
+                    transform: `scale(${previewScale})`,
+                    transformOrigin: 'top left'
+                  }}
+                >
+                  <TemplateRenderer templateId={selectedTemplate} data={resumeData} />
+                </div>
               </div>
             </div>
           </div>
@@ -225,14 +326,14 @@ const ResumeBuilder = () => {
       </div>
       {/* Mobile Floating Action Button - Non-overlapping */}
       {isMobile && (
-        <div className="fixed bottom-20 sm:bottom-6 right-6 z-50 pointer-events-auto">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 pointer-events-auto">
           <button 
             onClick={() => setViewMode(viewMode === 'edit' ? 'preview' : 'edit')} 
             className={`
               flex items-center space-x-2 px-4 py-3 sm:px-5 sm:py-4 
               rounded-full shadow-2xl backdrop-blur-md border border-white/20
-              text-white font-semibold text-sm sm:text-base min-h-[48px] min-w-[120px]
-              transition-all duration-300 hover:scale-105 active:scale-95
+              text-white font-semibold text-sm sm:text-base min-h-[48px] min-w-[110px] sm:min-w-[120px]
+              transition-all duration-300 active:scale-95
               ${viewMode === 'edit' ? 'bg-gradient-to-r from-[#bbad79] to-[#9a9163] shadow-[#bbad79]/30' : 'bg-gradient-to-r from-gray-700 to-gray-800 shadow-gray-500/30'}
             `}
           >

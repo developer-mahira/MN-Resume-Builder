@@ -10,7 +10,7 @@ const MinimalProfessional = ({ data }) => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 lg:p-8 min-h-screen sm:min-h-[900px] text-xs sm:text-sm font-sans template-safe">
+    <div className="bg-white p-8 min-h-full text-[13px] leading-6 font-sans template-safe">
       {/* Header - Clean and Centered */}
       <header className="text-center pb-6 mb-8 border-b border-gray-200">
         <h1 className="text-3xl font-bold text-gray-900 tracking-tight mb-3">
@@ -74,7 +74,7 @@ const MinimalProfessional = ({ data }) => {
           </h2>
           {workExperience.map((work, index) => (
             <div key={index} className="mb-6">
-              <div className="flex justify-between items-baseline mb-2">
+              <div className="flex flex-wrap justify-between items-baseline gap-x-4 gap-y-1 mb-2">
                 <div>
                   <h3 className="font-semibold text-gray-900">{work.jobTitle || 'Job Title'}</h3>
                   <p className="text-gray-600">{work.company || 'Company Name'}</p>
@@ -99,7 +99,7 @@ const MinimalProfessional = ({ data }) => {
           </h2>
           {education.map((edu, index) => (
             <div key={index} className="mb-4">
-              <div className="flex justify-between items-baseline mb-1">
+              <div className="flex flex-wrap justify-between items-baseline gap-x-4 gap-y-1 mb-1">
                 <div>
                   <h3 className="font-semibold text-gray-900">{edu.degree || 'Degree'}</h3>
                   <p className="text-gray-600">{edu.institution || 'Institution'}</p>

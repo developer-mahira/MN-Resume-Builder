@@ -10,7 +10,7 @@ const CorporateClassic = ({ data }) => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 lg:p-8 min-h-screen sm:min-h-[900px] text-xs sm:text-sm font-serif template-safe">
+    <div className="bg-white p-8 min-h-full text-[13px] leading-6 font-serif template-safe">
       {/* Header - Classic Two-Line Format */}
       <header className="pb-6 mb-6 border-b-2 border-gray-800">
         <h1 className="text-4xl font-bold text-gray-900 mb-2 uppercase tracking-wider">
@@ -69,12 +69,12 @@ const CorporateClassic = ({ data }) => {
           </h2>
           {workExperience.map((work, index) => (
             <div key={index} className="mb-5">
-              <div className="flex justify-between items-start mb-2">
+              <div className="flex flex-wrap justify-between items-start gap-x-4 gap-y-1 mb-2">
                 <div>
                   <h3 className="font-bold text-gray-900 text-base">{work.jobTitle || 'Job Title'}</h3>
                   <p className="text-gray-700 italic">{work.company || 'Company Name'}</p>
                 </div>
-                <span className="text-gray-600 text-sm whitespace-nowrap">
+                <span className="text-gray-600 text-sm">
                   {formatDate(work.startDate)} — {work.endDate ? formatDate(work.endDate) : 'Present'}
                 </span>
               </div>
@@ -94,7 +94,7 @@ const CorporateClassic = ({ data }) => {
           </h2>
           {education.map((edu, index) => (
             <div key={index} className="mb-3">
-              <div className="flex justify-between items-start">
+              <div className="flex flex-wrap justify-between items-start gap-x-4 gap-y-1">
                 <div>
                   <h3 className="font-bold text-gray-900">{edu.degree || 'Degree'}</h3>
                   <p className="text-gray-700">{edu.institution || 'Institution'}</p>
@@ -140,7 +140,7 @@ const CorporateClassic = ({ data }) => {
             CERTIFICATIONS
           </h2>
           {certifications.map((cert, index) => (
-            <div key={index} className="mb-2 flex justify-between">
+            <div key={index} className="mb-2 flex flex-wrap justify-between gap-x-4 gap-y-1">
               <div>
                 <span className="font-bold text-gray-900">{cert.name}</span>
                 <span className="text-gray-700"> — {cert.issuer}</span>

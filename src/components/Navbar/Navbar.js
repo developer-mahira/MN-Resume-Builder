@@ -40,18 +40,18 @@ const Navbar = () => {
   const bgColor = 'bg-[#1a2332]';
 
   return (
-    <nav className={`fixed w-full z-50 py-3 lg:py-4 ${bgColor}`}>
+    <nav className={`fixed w-full z-50 py-2 sm:py-3 lg:py-4 ${bgColor}`}>
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-3">
           {/* Logo - Always visible */}
           <Link to="/" className="flex items-center space-x-2 group flex-shrink-0">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#bbad79] rounded-lg flex items-center justify-center group-hover:bg-[#9a9163] transition-colors">
               <FaFileAlt className="text-white text-sm sm:text-lg" />
             </div>
-            <span className={`font-bold text-lg sm:text-xl ${textColor} transition-colors hidden xs:block`}>
+            <span className={`font-bold text-base sm:text-xl ${textColor} transition-colors hidden min-[420px]:block`}>
               MN Resume
             </span>
-            <span className={`font-bold text-lg sm:text-xl ${textColor} transition-colors xs:hidden`}>
+            <span className={`font-bold text-base sm:text-xl ${textColor} transition-colors min-[420px]:hidden`}>
               MN
             </span>
           </Link>
@@ -148,11 +148,11 @@ const Navbar = () => {
             <hr className="my-2 border-gray-200" />
             {user ? (
               <div className="px-4 py-2">
-                <div className="flex items-center space-x-3 mb-3">
+                <div className="flex items-center space-x-3 mb-3 min-w-0">
                   <div className="w-8 h-8 bg-[#bbad79] rounded-full flex items-center justify-center">
                     <FaUser className="text-white text-sm" />
                   </div>
-                  <span className="text-sm text-gray-700">{user.email}</span>
+                  <span className="text-sm text-gray-700 break-all">{user.email}</span>
                 </div>
                 <button
                   onClick={handleLogout}

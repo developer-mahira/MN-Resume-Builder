@@ -1,4 +1,4 @@
- import React from 'react';
+import React from 'react';
 
 const DeveloperTech = ({ data }) => {
   const { personal, skills, workExperience, education, projects, certifications, languages } = data;
@@ -10,10 +10,10 @@ const DeveloperTech = ({ data }) => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 lg:p-8 min-h-screen sm:min-h-[900px] text-xs sm:text-sm font-mono template-safe">
+    <div className="bg-white p-8 min-h-full text-[13px] leading-6 font-mono template-safe">
       {/* Header - Tech Style */}
       <header className="mb-8 pb-6 border-b-4 border-gray-900">
-        <div className="flex items-start justify-between">
+        <div className="flex justify-between items-start gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-1">
               {personal.firstName || 'First Name'} <span className="text-[#bbad79]">{personal.lastName || 'Last Name'}</span>
@@ -85,7 +85,7 @@ const DeveloperTech = ({ data }) => {
           </h2>
           {workExperience.map((work, index) => (
             <div key={index} className="mb-6">
-              <div className="flex justify-between items-start mb-2">
+              <div className="flex flex-wrap justify-between items-start gap-x-4 gap-y-1 mb-2">
                 <div>
                   <h3 className="font-bold text-gray-900">
                     <span className="text-[#22863a]">{'>'}</span> {work.jobTitle || 'Job Title'}
@@ -145,7 +145,7 @@ const DeveloperTech = ({ data }) => {
             <span className="text-[#bbad79]">#</span> Education
           </h2>
           {education.map((edu, index) => (
-            <div key={index} className="mb-4 flex justify-between items-start p-3 bg-gray-50 rounded">
+            <div key={index} className="mb-4 flex flex-wrap justify-between items-start gap-x-4 gap-y-2 p-3 bg-gray-50 rounded">
               <div>
                 <h3 className="font-bold text-gray-900">{edu.degree || 'Degree'}</h3>
                 <p className="text-gray-600">{edu.institution || 'Institution'}</p>

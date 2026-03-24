@@ -14,6 +14,9 @@ const ResumeBuilder = lazy(() => import('./pages/ResumeBuilder/ResumeBuilder'));
 const CoverLetterBuilder = lazy(() => import('./pages/CoverLetterBuilder/CoverLetterBuilder'));
 const ATSAnalyzer = lazy(() => import('./pages/ATSAnalyzer/ATSAnalyzer'));
 const Templates = lazy(() => import('./pages/Templates/Templates'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'));
+const Terms = lazy(() => import('./pages/Terms/Terms'));
+const Privacy = lazy(() => import('./pages/Privacy/Privacy'));
 
 // Page wrapper with Suspense
 const PageWrapper = ({ children }) => (
@@ -54,6 +57,9 @@ function App() {
           <Routes>
             <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
             <Route path="/signup" element={<PageWrapper><Signup /></PageWrapper>} />
+            <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
+            <Route path="/terms" element={<PageWrapper><Terms /></PageWrapper>} />
+            <Route path="/privacy" element={<PageWrapper><Privacy /></PageWrapper>} />
           </Routes>
 
           {/* Protected Routes with Dashboard Layout */}

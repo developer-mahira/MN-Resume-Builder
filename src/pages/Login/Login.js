@@ -9,9 +9,15 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [emailLoading, setEmailLoading] = useState(false);
-  const [socialLoading, setSocialLoading] = useState(false);
+  const [activeSocialProvider, setActiveSocialProvider] = useState('');
   const navigate = useNavigate();
-  const { loginWithGoogle, loginWithGithub, error: authError } = useAuth();
+  const { loginWithEmail, loginWithGoogle, loginWithGithub, error: authError } = useAuth();
+
+  const navigateAfterAuth = () => {
+    const redirectUrl = localStorage.getItem('rba_redirect_after_login');
+    localStorage.removeItem('rba_redirect_after_login');
+    navigate(redirectUrl || '/dashboard');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,32 +31,17 @@ const Login = () => {
     }
 
     try {
-      const user = {
-        email: email,
-        name: email.split('@')[0],
-        password: password
-      };
-      
-      localStorage.setItem('rba_current_user', JSON.stringify(user));
-      
-      const redirectUrl = localStorage.getItem('rba_redirect_after_login');
-      localStorage.removeItem('rba_redirect_after_login');
-      
-      setTimeout(() => {
-        if (redirectUrl) {
-          navigate(redirectUrl);
-        } else {
-          navigate('/dashboard');
-        }
-      }, 500);
+      await loginWithEmail(email, password);
+      navigateAfterAuth();
     } catch (err) {
-      setError('Failed to sign in. Please try again.');
+      setError(err.message || 'Failed to sign in. Please try again.');
+    } finally {
       setEmailLoading(false);
     }
   };
 
   return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-[#bbad79]/30 flex items-center justify-center w-screen overflow-hidden relative">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-[#bbad79]/30 flex items-center justify-center w-full overflow-hidden relative px-3 sm:px-0">
       {/* Decorative elements - hidden on mobile, visible on sm+ */}
       <div className="hidden sm:block absolute top-20 left-10 w-72 h-72 bg-[rgba(187,173,121,0.1)] rounded-full [filter:blur(3rem)] max-w-[40vw] max-h-[40vw]"></div>
       <div className="hidden sm:block absolute bottom-20 right-10 w-96 h-96 bg-[rgba(187,173,121,0.1)] rounded-full [filter:blur(3rem)] max-w-[40vw] max-h-[40vw]"></div>
@@ -173,22 +164,24 @@ const Login = () => {
           <div className="flex flex-col gap-3">
             <button 
               onClick={async () => {
-                setSocialLoading(true);
+                setActiveSocialProvider('google');
                 setError('');
                 try {
-                  await loginWithGoogle();
-                  navigate('/dashboard');
+                  const result = await loginWithGoogle();
+                  if (!result?.redirecting) {
+                    navigateAfterAuth();
+                  }
                 } catch (err) {
-                  setError('Google login failed. Please try again.');
+                  setError(err.message || 'Google login failed. Please try again.');
                 } finally {
-                  setSocialLoading(false);
+                  setActiveSocialProvider('');
                 }
               }}
-              disabled={socialLoading}
+              disabled={!!activeSocialProvider}
               className="flex items-center justify-center py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group w-full disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
             >
-              {socialLoading ? (
+              {activeSocialProvider === 'google' ? (
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -197,27 +190,29 @@ const Login = () => {
                 <FaGoogle className="text-gray-600 group-hover:text-[#bbad79] transition-colors mr-2" />
               )}
               <span className="text-gray-700 font-medium">
-                {socialLoading ? 'Signing in with Google...' : 'Google'}
+                {activeSocialProvider === 'google' ? 'Signing in with Google...' : 'Google'}
               </span>
             </button>
             <button 
               onClick={async () => {
-                setSocialLoading(true);
+                setActiveSocialProvider('github');
                 setError('');
                 try {
-                  await loginWithGithub();
-                  navigate('/dashboard');
+                  const result = await loginWithGithub();
+                  if (!result?.redirecting) {
+                    navigateAfterAuth();
+                  }
                 } catch (err) {
-                  setError('GitHub login failed. Please try again.');
+                  setError(err.message || 'GitHub login failed. Please try again.');
                 } finally {
-                  setSocialLoading(false);
+                  setActiveSocialProvider('');
                 }
               }}
-              disabled={socialLoading}
+              disabled={!!activeSocialProvider}
               className="flex items-center justify-center py-4 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-[#bbad79] transition-all group w-full disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ minHeight: '48px', boxSizing: 'border-box', width: '100%' }}
             >
-              {socialLoading ? (
+              {activeSocialProvider === 'github' ? (
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -226,7 +221,7 @@ const Login = () => {
                 <FaGithub className="text-gray-600 group-hover:text-[#bbad79] transition-colors mr-2" />
               )}
               <span className="text-gray-700 font-medium">
-                {socialLoading ? 'Signing in with GitHub...' : 'GitHub'}
+                {activeSocialProvider === 'github' ? 'Signing in with GitHub...' : 'GitHub'}
               </span>
             </button>
           </div>

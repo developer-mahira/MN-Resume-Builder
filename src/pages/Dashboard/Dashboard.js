@@ -1,33 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   FaFileAlt, FaEnvelope, FaSearch, FaPlus, FaEdit, FaTrash, 
   FaDownload, FaUser, FaSignOutAlt, FaBars, FaCheckCircle, FaClock
 } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
 
 const Dashboard = () => {
-  const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [savedResumes, setSavedResumes] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('rba_current_user');
-    if (!savedUser) {
+    if (!user) {
       navigate('/login');
     } else {
-      setUser(JSON.parse(savedUser));
       loadResumes();
     }
-  }, [navigate]);
+  }, [navigate, user]);
 
   const loadResumes = () => {
     const resumes = JSON.parse(localStorage.getItem('rba_resumes') || '[]');
     setSavedResumes(resumes);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('rba_current_user');
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
@@ -40,7 +40,7 @@ const Dashboard = () => {
   };
 
   const menuItems = [
-    { icon: <FaFileAlt className="w-4 h-4" />, label: 'My Resumes', path: '/dashboard', active: true },
+    { icon: <FaFileAlt className="w-4 h-4" />, label: 'My Resumes', path: '/dashboard' },
     { icon: <FaPlus className="w-4 h-4" />, label: 'Create New', path: '/resume-builder' },
     { icon: <FaEnvelope className="w-4 h-4" />, label: 'Cover Letters', path: '/cover-letter-builder' },
     { icon: <FaSearch className="w-4 h-4" />, label: 'ATS Analyzer', path: '/ats-check' },
@@ -86,7 +86,7 @@ const Dashboard = () => {
               key={index}
               to={item.path}
               className={`flex items-center space-x-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-lg transition-colors ${
-                item.active 
+                location.pathname === item.path
                   ? 'bg-[#bbad79] text-white' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
@@ -120,7 +120,7 @@ const Dashboard = () => {
       {/* Main Content */}
       <div className="flex-1 lg:ml-64">
         {/* Top Bar */}
-        <header className="h-14 lg:h-20 bg-white shadow-sm flex items-center justify-between px-3 lg:px-6 lg:px-8">
+        <header className="min-h-[56px] lg:min-h-[80px] bg-white shadow-sm flex items-center justify-between gap-3 px-3 lg:px-6 lg:px-8 py-2">
           <button 
             className="lg:hidden p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-600"
             onClick={() => setSidebarOpen(true)}
@@ -133,7 +133,7 @@ const Dashboard = () => {
 
           <Link
             to="/resume-builder"
-            className="flex items-center space-x-2 px-3 lg:px-4 py-2 bg-[#bbad79] text-white rounded-lg hover:bg-[#9a9163] transition-colors text-sm"
+            className="flex items-center space-x-2 px-3 lg:px-4 py-2.5 bg-[#bbad79] text-white rounded-lg hover:bg-[#9a9163] transition-colors text-sm shrink-0"
           >
             <FaPlus className="w-4 h-4" />
             <span className="hidden sm:inline">Create Resume</span>
@@ -239,16 +239,19 @@ const Dashboard = () => {
                       {resume.status === 'complete' ? 'Completed' : 'Draft'}
                     </span>
 
-                    <div className="flex items-center space-x-1 lg:space-x-2">
+                    <div className="flex items-center flex-wrap gap-1 lg:gap-2">
                       <Link 
                         to={`/resume-builder?resumeId=${resume.id}`}
                         className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-[#bbad79] transition-colors"
                       >
                         <FaEdit className="text-sm" />
                       </Link>
-                      <button className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-green-600 transition-colors">
+                      <Link
+                        to={`/resume-builder?resumeId=${resume.id}&download=1`}
+                        className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-green-600 transition-colors"
+                      >
                         <FaDownload className="text-sm" />
-                      </button>
+                      </Link>
                       <button 
                         onClick={() => deleteResume(resume.id)} 
                         className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-red-600 transition-colors"

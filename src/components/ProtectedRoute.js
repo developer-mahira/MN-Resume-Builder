@@ -11,7 +11,6 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!user) {
-    // Redirect to login with return URL
     const returnUrl = window.location.pathname;
     localStorage.setItem('rba_redirect_after_login', returnUrl);
     return <Navigate to="/login" replace />;
