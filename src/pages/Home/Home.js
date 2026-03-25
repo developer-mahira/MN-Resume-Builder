@@ -70,7 +70,7 @@ const Home = () => {
         <div className="absolute bottom-20 right-2 sm:right-10 w-52 h-52 sm:w-96 sm:h-96 bg-[#bbad79]/10 rounded-full blur-3xl"></div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-8 sm:py-10">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 animate-fadeIn break-words">
+          <h1 className="text-[2rem] sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 animate-fadeIn break-words">
             Build a Resume That{' '}
             <span className="text-[#bbad79]">Gets You Hired.</span>
           </h1>

@@ -81,7 +81,8 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => readStoredUser());
-  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [redirectLoading, setRedirectLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -98,6 +99,10 @@ export const AuthProvider = ({ children }) => {
       } catch (err) {
         if (!cancelled) {
           setError(err.message);
+        }
+      } finally {
+        if (!cancelled) {
+          setRedirectLoading(false);
         }
       }
     };
@@ -122,11 +127,11 @@ export const AuthProvider = ({ children }) => {
         setUser(storedUser);
       }
 
-      setLoading(false);
+      setAuthLoading(false);
     }, (err) => {
       setError(err.message);
       setUser(readStoredUser());
-      setLoading(false);
+      setAuthLoading(false);
     });
 
     return unsubscribe;
@@ -285,6 +290,8 @@ export const AuthProvider = ({ children }) => {
       throw new Error(readableMessage);
     }
   };
+
+  const loading = authLoading || redirectLoading;
 
   const value = {
     user,

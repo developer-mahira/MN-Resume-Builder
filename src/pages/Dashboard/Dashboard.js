@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   FaFileAlt, FaEnvelope, FaSearch, FaPlus, FaEdit, FaTrash, 
   FaDownload, FaUser, FaSignOutAlt, FaBars, FaCheckCircle, FaClock
 } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
+import { LoadingSpinner } from '../../components/LoadingSpinner';
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [savedResumes, setSavedResumes] = useState([]);
-  const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    } else {
+    if (user) {
       loadResumes();
     }
-  }, [navigate, user]);
+  }, [user]);
 
   const loadResumes = () => {
     const resumes = JSON.parse(localStorage.getItem('rba_resumes') || '[]');
@@ -28,7 +26,6 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/');
   };
 
   const deleteResume = (id) => {
@@ -52,7 +49,13 @@ const Dashboard = () => {
     { label: 'Drafts', value: savedResumes.filter(r => r.status === 'draft').length, icon: <FaClock className="w-5 h-5" /> },
   ];
 
-  if (!user) return null;
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!user) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
