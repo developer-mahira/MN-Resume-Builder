@@ -163,16 +163,15 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, []);
 
-const loading = authLoading || redirectLoading;
 useEffect(() => {
-  if (!loading) {
+  if (!(authLoading || redirectLoading)) {
     const pendingProvider = getSocialRedirectPending();
     if (pendingProvider && !user) {
       setError(`We couldn't finish ${pendingProvider} sign-in on this device. Please try again in Chrome/Safari, or check that this domain is authorized in Firebase.`);
       setSocialRedirectPending(null);
     }
   }
-}, [loading, user]);
+}, [authLoading, redirectLoading, user]);
 
   const loginWithProvider = async (provider) => {
     setError(null);
@@ -331,11 +330,9 @@ useEffect(() => {
     }
   };
 
-  const loading = authLoading || redirectLoading;
-
   const value = {
     user,
-    loading,
+    loading: authLoading || redirectLoading,
     error,
     loginWithEmail,
     signupWithEmail,
