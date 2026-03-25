@@ -15,15 +15,15 @@ import {
 const AuthContext = createContext({});
 const LOCAL_USERS_KEY = 'rba_users';
 const LOCAL_CURRENT_USER_KEY = 'rba_current_user';
+const SOCIAL_REDIRECT_PENDING_KEY = 'rba_social_redirect_pending';
 
 const isRedirectPreferredEnvironment = () => {
   if (typeof window === 'undefined') return false;
 
   const userAgent = window.navigator.userAgent || '';
-  const isMobileViewport = window.innerWidth < 768;
   const isEmbeddedBrowser = /FBAN|FBAV|Instagram|Line|wv|WebView/i.test(userAgent);
 
-  return isMobileViewport || isEmbeddedBrowser;
+  return isEmbeddedBrowser;
 };
 
 const getReadableAuthError = (err) => {
@@ -71,6 +71,26 @@ const persistUser = (user) => {
   localStorage.setItem(LOCAL_CURRENT_USER_KEY, JSON.stringify(user));
 };
 
+const setSocialRedirectPending = (value) => {
+  try {
+    if (value) {
+      sessionStorage.setItem(SOCIAL_REDIRECT_PENDING_KEY, value);
+    } else {
+      sessionStorage.removeItem(SOCIAL_REDIRECT_PENDING_KEY);
+    }
+  } catch (err) {
+    // Ignore storage access issues and let Firebase auth continue.
+  }
+};
+
+const getSocialRedirectPending = () => {
+  try {
+    return sessionStorage.getItem(SOCIAL_REDIRECT_PENDING_KEY);
+  } catch (err) {
+    return null;
+  }
+};
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -91,14 +111,18 @@ export const AuthProvider = ({ children }) => {
     const hydrateRedirectResult = async () => {
       try {
         const result = await getRedirectResult(auth);
-        if (cancelled || !result?.user) return;
+        if (cancelled || !result?.user) {
+          return;
+        }
 
         const normalizedUser = normalizeUser(result.user);
         setUser(normalizedUser);
         persistUser(normalizedUser);
+        setSocialRedirectPending(null);
       } catch (err) {
         if (!cancelled) {
-          setError(err.message);
+          setError(getReadableAuthError(err));
+          setSocialRedirectPending(null);
         }
       } finally {
         if (!cancelled) {
@@ -122,6 +146,7 @@ export const AuthProvider = ({ children }) => {
       if (normalizedUser) {
         setUser(normalizedUser);
         persistUser(normalizedUser);
+        setSocialRedirectPending(null);
       } else {
         const storedUser = readStoredUser();
         setUser(storedUser);
@@ -131,16 +156,28 @@ export const AuthProvider = ({ children }) => {
     }, (err) => {
       setError(err.message);
       setUser(readStoredUser());
+      setSocialRedirectPending(null);
       setAuthLoading(false);
     });
 
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    if (!loading) {
+      const pendingProvider = getSocialRedirectPending();
+      if (pendingProvider && !user) {
+        setError(`We couldn't finish ${pendingProvider} sign-in on this device. Please try again in Chrome/Safari, or check that this domain is authorized in Firebase.`);
+        setSocialRedirectPending(null);
+      }
+    }
+  }, [loading, user]);
+
   const loginWithProvider = async (provider) => {
     setError(null);
 
     if (isRedirectPreferredEnvironment()) {
+      setSocialRedirectPending(provider.providerId === 'github.com' ? 'GitHub' : 'Google');
       await signInWithRedirect(auth, provider);
       return { user: null, redirecting: true };
     }
@@ -150,10 +187,12 @@ export const AuthProvider = ({ children }) => {
       const normalizedUser = normalizeUser(result.user);
       setUser(normalizedUser);
       persistUser(normalizedUser);
+      setSocialRedirectPending(null);
       return { user: normalizedUser, redirecting: false };
     } catch (err) {
       if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
         setError(getReadableAuthError(err));
+        setSocialRedirectPending(provider.providerId === 'github.com' ? 'GitHub' : 'Google');
         await signInWithRedirect(auth, provider);
         return { user: null, redirecting: true };
       }
