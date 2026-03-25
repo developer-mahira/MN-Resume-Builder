@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FaEnvelope, FaLock, FaUser, FaEye, FaEyeSlash, FaFileAlt, FaCheck, FaTimes, FaGoogle, FaGithub } from 'react-icons/fa';
@@ -16,7 +16,15 @@ const Signup = () => {
   const [activeSocialProvider, setActiveSocialProvider] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const navigate = useNavigate();
-  const { signupWithEmail, loginWithGoogle, loginWithGithub } = useAuth();
+  const { user, loading, signupWithEmail, loginWithGoogle, loginWithGithub } = useAuth();
+
+  useEffect(() => {
+    if (!loading && user) {
+      const redirectUrl = localStorage.getItem('rba_redirect_after_login');
+      localStorage.removeItem('rba_redirect_after_login');
+      navigate(redirectUrl || '/dashboard');
+    }
+  }, [loading, navigate, user]);
 
   const handleChange = (e) => {
     setFormData({

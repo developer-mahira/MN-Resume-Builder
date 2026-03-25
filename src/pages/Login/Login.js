@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaFileAlt, FaGoogle, FaGithub } from 'react-icons/fa';
@@ -11,13 +11,19 @@ const Login = () => {
   const [emailLoading, setEmailLoading] = useState(false);
   const [activeSocialProvider, setActiveSocialProvider] = useState('');
   const navigate = useNavigate();
-  const { loginWithEmail, loginWithGoogle, loginWithGithub, error: authError } = useAuth();
+  const { user, loading, loginWithEmail, loginWithGoogle, loginWithGithub, error: authError } = useAuth();
 
-  const navigateAfterAuth = () => {
+  const navigateAfterAuth = useCallback(() => {
     const redirectUrl = localStorage.getItem('rba_redirect_after_login');
     localStorage.removeItem('rba_redirect_after_login');
     navigate(redirectUrl || '/dashboard');
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigateAfterAuth();
+    }
+  }, [loading, navigateAfterAuth, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

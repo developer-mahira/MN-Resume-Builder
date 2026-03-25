@@ -61,7 +61,7 @@ const Home = () => {
       <div className="h-16 sm:h-20"></div>
 
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-12 sm:pt-16 lg:pt-20">
         {/* Background - solid dark navy blue */}
         <div className="absolute inset-0 bg-[#1a2332]"></div>
         
@@ -69,7 +69,7 @@ const Home = () => {
         <div className="absolute top-20 left-2 sm:left-10 w-40 h-40 sm:w-72 sm:h-72 bg-[#bbad79]/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-2 sm:right-10 w-52 h-52 sm:w-96 sm:h-96 bg-[#bbad79]/10 rounded-full blur-3xl"></div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-8 sm:py-10">
           <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 animate-fadeIn break-words">
             Build a Resume That{' '}
             <span className="text-[#bbad79]">Gets You Hired.</span>
