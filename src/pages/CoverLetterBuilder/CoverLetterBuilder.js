@@ -8,6 +8,7 @@ const CoverLetterBuilder = () => {
   const [viewMode, setViewMode] = useState('edit');
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
   const coverLetterRef = useRef();
+  const printableCoverLetterRef = useRef();
 
   const [coverLetterData, setCoverLetterData] = useState({
     yourName: 'Mahira Noor',
@@ -29,8 +30,14 @@ const CoverLetterBuilder = () => {
   }, []);
 
   const downloadPDF = () => {
-    const element = coverLetterRef.current;
-    const opt = { margin: 10, filename: 'cover_letter.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+    const element = printableCoverLetterRef.current || coverLetterRef.current;
+    const opt = {
+      margin: 10,
+      filename: 'cover_letter.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
     html2pdf().set(opt).from(element).save();
   };
 
@@ -323,6 +330,33 @@ const CoverLetterBuilder = () => {
             </div>
           </div>
         )}
+      </div>
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          left: '-10000px',
+          top: 0,
+          width: `${documentWidth}px`,
+          minHeight: `${documentHeight}px`,
+          background: '#ffffff',
+          pointerEvents: 'none',
+          opacity: 1,
+          overflow: 'visible',
+          zIndex: -1
+        }}
+      >
+        <div
+          ref={printableCoverLetterRef}
+          className="document-page"
+          style={{
+            width: `${documentWidth}px`,
+            minHeight: `${documentHeight}px`,
+            background: '#ffffff'
+          }}
+        >
+          {renderTemplate(false)}
+        </div>
       </div>
     </div>
   );

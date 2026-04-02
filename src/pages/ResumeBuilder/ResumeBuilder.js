@@ -25,6 +25,7 @@ const ResumeBuilder = () => {
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
   const [searchParams, setSearchParams] = useSearchParams();
   const resumeRef = useRef();
+  const printableResumeRef = useRef();
   const resumeId = searchParams.get('resumeId');
   const requestedTemplate = searchParams.get('template');
   const shouldAutoDownload = searchParams.get('download') === '1';
@@ -83,9 +84,15 @@ const ResumeBuilder = () => {
   }, []);
 
   const downloadPDF = useCallback(() => {
-    const element = resumeRef.current;
+    const element = printableResumeRef.current || resumeRef.current;
     if (!element) return;
-    const opt = { margin: 0, filename: `${resumeData.personal.firstName || 'resume'}_${resumeData.personal.lastName || 'builder'}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+    const opt = {
+      margin: 0,
+      filename: `${resumeData.personal.firstName || 'resume'}_${resumeData.personal.lastName || 'builder'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
     html2pdf().set(opt).from(element).save();
   }, [resumeData.personal.firstName, resumeData.personal.lastName]);
 
@@ -353,6 +360,33 @@ const ResumeBuilder = () => {
       )}
 
       {/* Inline styles deprecated - All moved to Tailwind */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          left: '-10000px',
+          top: 0,
+          width: `${documentWidth}px`,
+          minHeight: `${documentHeight}px`,
+          background: '#ffffff',
+          pointerEvents: 'none',
+          opacity: 1,
+          overflow: 'visible',
+          zIndex: -1
+        }}
+      >
+        <div
+          ref={printableResumeRef}
+          className="document-page"
+          style={{
+            width: `${documentWidth}px`,
+            minHeight: `${documentHeight}px`,
+            background: '#ffffff'
+          }}
+        >
+          <TemplateRenderer templateId={selectedTemplate} data={resumeData} />
+        </div>
+      </div>
     </div>
   );
 };

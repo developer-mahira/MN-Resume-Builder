@@ -1,5 +1,5 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -17,6 +17,8 @@ const Templates = lazy(() => import('./pages/Templates/Templates'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword/ForgotPassword'));
 const Terms = lazy(() => import('./pages/Terms/Terms'));
 const Privacy = lazy(() => import('./pages/Privacy/Privacy'));
+const About = lazy(() => import('./pages/About/About'));
+const Contact = lazy(() => import('./pages/Contact/Contact'));
 
 // Page wrapper with Suspense
 const PageWrapper = ({ children }) => (
@@ -30,10 +32,21 @@ const PageWrapper = ({ children }) => (
   </Suspense>
 );
 
+const ScrollToTop = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [location.pathname]);
+
+  return null;
+};
+
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
 <div className="App min-h-screen flex flex-col max-w-full overflow-x-hidden antialiased">
           {/* Routes that need Navbar */}
           <Routes>
@@ -48,6 +61,20 @@ function App() {
               <PageWrapper>
                 <Navbar />
                 <Templates />
+                <Footer />
+              </PageWrapper>
+            } />
+            <Route path="/about" element={
+              <PageWrapper>
+                <Navbar />
+                <About />
+                <Footer />
+              </PageWrapper>
+            } />
+            <Route path="/contact" element={
+              <PageWrapper>
+                <Navbar />
+                <Contact />
                 <Footer />
               </PageWrapper>
             } />
