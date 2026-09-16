@@ -10,13 +10,13 @@ import { getFirestore } from "firebase/firestore";
 // Firebase configuration
 // Replace these values with your Firebase project credentials
 const firebaseConfig = {
-  apiKey: "AIzaSyDJhQf6lx5wHVt4rfUG19BFWkCAwmDJy1M",
-  authDomain: "mn-resume-builder.firebaseapp.com",
-  projectId: "mn-resume-builder",
-  storageBucket: "mn-resume-builder.firebasestorage.app",
-  messagingSenderId: "796423107366",
-  appId: "1:796423107366:web:1990398e577ca38a1a87e7",
-  measurementId: "G-2G1HSYELX5"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
