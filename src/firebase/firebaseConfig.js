@@ -1,14 +1,14 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import {
   initializeAuth,
   browserLocalPersistence,
   indexedDBLocalPersistence,
-  browserPopupRedirectResolver
+  browserPopupRedirectResolver,
+  getAuth
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Firebase configuration
-// Replace these values with your Firebase project credentials
+// Firebase configuration loaded from environment variables
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -19,15 +19,40 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const isFirebaseConfigured = Boolean(
+  firebaseConfig.apiKey &&
+  firebaseConfig.projectId &&
+  firebaseConfig.appId
+);
 
-// Initialize Firebase services
-export const auth = initializeAuth(app, {
-  persistence: [indexedDBLocalPersistence, browserLocalPersistence],
-  popupRedirectResolver: browserPopupRedirectResolver,
-});
-export const db = getFirestore(app);
+let app = null;
+let auth = null;
+let db = null;
 
+if (isFirebaseConfigured) {
+  try {
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+    try {
+      auth = initializeAuth(app, {
+        persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+        popupRedirectResolver: browserPopupRedirectResolver,
+      });
+    } catch (authErr) {
+      auth = getAuth(app);
+    }
+    db = getFirestore(app);
+  } catch (err) {
+    console.warn("Firebase initialization failed:", err);
+    auth = null;
+    db = null;
+  }
+} else {
+  console.warn(
+    "Firebase environment variables are missing on this build. App is running with local authentication fallback."
+  );
+}
+
+export { app, auth, db };
 export default app;
+
 

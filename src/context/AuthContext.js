@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth } from '../firebase/firebaseConfig';
+import { auth, isFirebaseConfigured } from '../firebase/firebaseConfig';
 import { 
   GoogleAuthProvider, 
   GithubAuthProvider, 
@@ -108,6 +108,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     let cancelled = false;
 
+    if (!auth) {
+      setRedirectLoading(false);
+      return;
+    }
+
     const hydrateRedirectResult = async () => {
       try {
         const result = await getRedirectResult(auth);
@@ -140,6 +145,13 @@ export const AuthProvider = ({ children }) => {
 
   // Auth state listener
   useEffect(() => {
+    if (!auth) {
+      const storedUser = readStoredUser();
+      setUser(storedUser);
+      setAuthLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       const normalizedUser = normalizeUser(user);
 
@@ -175,6 +187,13 @@ useEffect(() => {
 
   const loginWithProvider = async (provider) => {
     setError(null);
+
+    if (!auth) {
+      const providerName = provider?.providerId === 'github.com' ? 'GitHub' : 'Google';
+      const msg = `${providerName} sign-in requires Firebase credentials. Please add your Firebase environment variables in your hosting settings (e.g. Vercel) or sign in using email & password.`;
+      setError(msg);
+      throw new Error(msg);
+    }
 
     if (isRedirectPreferredEnvironment()) {
       setSocialRedirectPending(provider.providerId === 'github.com' ? 'GitHub' : 'Google');
@@ -293,7 +312,9 @@ useEffect(() => {
   const logout = async () => {
     setError(null);
     try {
-      await signOut(auth);
+      if (auth) {
+        await signOut(auth);
+      }
     } catch (err) {
       if (err.code && err.code !== 'auth/no-current-user') {
         setError(err.message);
@@ -306,6 +327,22 @@ useEffect(() => {
 
   const resetPassword = async (email) => {
     setError(null);
+
+    if (!auth) {
+      const users = JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '[]');
+      const hasLocalAccount = users.some((storedUser) => storedUser.email === email);
+
+      if (hasLocalAccount) {
+        return {
+          status: 'local-account',
+          message: 'This email belongs to a local demo account. Password reset emails are only available when Firebase is configured.'
+        };
+      }
+
+      const msg = 'Firebase Authentication is not configured on this deployment. Please set the Firebase environment variables in your hosting settings (e.g. Vercel).';
+      setError(msg);
+      throw new Error(msg);
+    }
 
     try {
       await sendPasswordResetEmail(auth, email);
@@ -334,6 +371,7 @@ useEffect(() => {
     user,
     loading: authLoading || redirectLoading,
     error,
+    isFirebaseConfigured,
     loginWithEmail,
     signupWithEmail,
     loginWithGoogle,
